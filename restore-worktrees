@@ -1,0 +1,18 @@
+#!/bin/sh
+# vim: ft=sh: sw=2:
+
+root=`git ws` || {
+  echo "ERROR: Not a git workspace: `pwd`" 1>&2
+  exit 2
+}
+
+cd "${root}" && {
+  for branch in `git branch | grep -v '^[*]'`; do
+    top=${branch}/src
+
+    echo rm -rf "${top}"
+    echo git worktree prune
+
+    echo git worktree add "${top}" "${branch}" || exit "${?}"
+  done
+}
