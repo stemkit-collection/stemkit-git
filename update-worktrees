@@ -18,7 +18,7 @@ main () {
     run git remote update --prune
 
     should_force && {
-      info "Switching to simulation mode"
+      info "Switching to simulation mode (dry-run)"
       unset FORCE
     }
   }
