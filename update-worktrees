@@ -3,6 +3,7 @@
 
 unset REMOTE
 unset FORCE
+unset MERGE
 unset PUSH
 
 main () {
@@ -16,7 +17,7 @@ main () {
   [ "${REMOTE}" = yes ] && {
     run git remote update --prune
 
-    [ "${FORCE:+set}" = set ] && {
+    should_force && {
       info "Switching to simulation mode"
       unset FORCE
     }
@@ -28,20 +29,33 @@ main () {
 
       [ "${#}" -eq 2 ] || continue
 
-      if [ "${PUSH:+set}" = set ]; then
-        ensure_no_local_changes || pwd_and_run_indenting push "${?}" "${@}"
-      else
-        ensure_no_remote_changes || pwd_and_run_indenting merge_if_clean "${?}" "${@}"
-      fi
+      pwd="pwd"
+      [ "${PUSH}" = yes ] && {
+        ensure_no_local_changes || {
+          number=${?}
+          "${pwd}"
+
+          indent_output_from push "${number}" "${@}"
+          pwd="true"
+        }
+      }
+
+      [ "${MERGE}" = yes ] && {
+        ensure_no_remote_changes || {
+          number=${?}
+          "${pwd}"
+
+          indent_output_from merge_if_clean "${number}" "${@}"
+          pwd="true"
+        }
+      }
     }
   done
 }
 
-pwd_and_run_indenting () {
-  pwd && "${@}" 2>&1 | sed 's/^/  /'
-}
-
 parse_command_line () {
+  MERGE=yes
+
   for option in "${@}"; do
     case "${option}" in
       --force | -f )
@@ -50,10 +64,17 @@ parse_command_line () {
 
       --remote | -r )
         REMOTE=yes
+        MERGE=yes
+        PUSH=yes
       ;;
 
       --push | -p )
         PUSH=yes
+        unset MERGE
+      ;;
+
+      --merge | -m )
+        MERGE=yes
       ;;
 
       --help | -h )
@@ -66,13 +87,13 @@ parse_command_line () {
     esac
   done
 
-  [ "${FORCE:+set}" = set ] || info "Simulation mode (dry-run), use --force for normal run"
+  should_force || info "Simulation mode (dry-run), use --force for normal run"
 }
 
 usage_and_exit () {
   [ "${2:+set}" = set ] && error "${2}"
 
-  usage "[--help | -h] [--force | -f] [--remote | -r]"
+  usage "[--help | -h][--force | -f][--remote | -r][--push | -p][--merge | -m]"
   exit "${1}"
 }
 
@@ -104,11 +125,16 @@ push () {
 run () {
   echo "${FORCE:-##} ${@}"
 
-  [ "${FORCE:+set}" = set ] || {
-    return 0
-  }
-
+  should_force || return 0
   "${@}"
+}
+
+should_force () {
+  test "${FORCE:+set}" = set
+}
+
+indent_output_from () {
+  "${@}" 2>&1 | sed 's/^/  /'
 }
 
 info () {
