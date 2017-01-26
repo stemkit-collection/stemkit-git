@@ -1,18 +1,51 @@
 #!/bin/sh
 # vim: ft=sh: sw=2:
 
-root=`git ws` || {
-  echo "ERROR: Not a git workspace: `pwd`" 1>&2
-  exit 2
+unset FORCE
+
+main () {
+  root=`git ws` || {
+    echo "ERROR: Not a git workspace: `pwd`" 1>&2
+    exit 2
+  }
+
+  [ "${1}" = '-f' ] && {
+    FORCE='=='
+  }
+
+  [ "${FORCE:+set}" = set ] || {
+    echo "INFO: Simulation mode (dry-run), use -f to force the commands"
+  }
+
+  cd "${root}" && {
+    run git worktree prune
+
+    git branch | grep -v '^[*]' | while read line; do
+      make_worktree ${line} || break
+    done
+  }
 }
 
-cd "${root}" && {
-  for branch in `git branch | grep -v '^[*]'`; do
-    top=${branch}/src
+make_worktree () {
+    top=${1}/src
 
-    echo rm -rf "${top}"
-    echo git worktree prune
+    [ -e "${top}" ] && {
+      echo "WARNING: Already exists: ${top}" 1>&2
+      return 0
+    }
 
-    echo git worktree add "${top}" "${branch}" || exit "${?}"
-  done
+    run git worktree add "${top}" "${1}"
 }
+
+run () {
+  echo "${FORCE:-##} ${@}"
+
+  [ "${FORCE:+set}" = set ] || {
+    return 0
+  }
+
+  "${@}"
+}
+
+exec 5>/dev/null
+main "${@}"
