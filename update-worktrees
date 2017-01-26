@@ -23,6 +23,11 @@ main () {
     }
   }
 
+  should_force || {
+    MERGE=yes
+    PUSH=yes
+  }
+
   git -C "${root}" tt top 2>&5 | while read top; do
     cd "${top}" && {
       set -- `git bbs | awk '$1 == "*" {print $(2), $(NF)}'`
@@ -62,10 +67,13 @@ parse_command_line () {
         FORCE='=='
       ;;
 
+      --dry-run | -n )
+        unset FORCE
+      ;;
+
       --remote | -r )
         REMOTE=yes
-        MERGE=yes
-        PUSH=yes
+        FORCE=yes
       ;;
 
       --push | -p )
@@ -93,7 +101,7 @@ parse_command_line () {
 usage_and_exit () {
   [ "${2:+set}" = set ] && error "${2}"
 
-  usage "[--help | -h][--force | -f][--remote | -r][--push | -p][--merge | -m]"
+  usage "[--help | -h][--force | -f][--dry-run | -n][--remote | -r][--push | -p][--merge | -m]"
   exit "${1}"
 }
 
