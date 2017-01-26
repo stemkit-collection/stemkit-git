@@ -1,10 +1,20 @@
 #!/bin/sh
 # vim: ft=sh: sw=2:
 
+unset FORCE
+
 main () {
   root=`git ws` || {
     echo "ERROR: Not a git workspace: `pwd`" 1>&2
     exit 2
+  }
+
+  [ "${1}" = '-f' ] && {
+    FORCE='=='
+  }
+
+  [ "${FORCE:+set}" = set ] || {
+    echo "INFO: Simulation mode (dry-run), use -f to force the commands"
   }
 
   git -C "${root}" tt top 2>&5 | while read top; do
@@ -12,7 +22,9 @@ main () {
       set -- `git bbs | awk '$1 == "*" {print $(2), $(NF)}'`
 
       [ "${#}" -eq 2 ] && {
-        ensure_no_changes || pwd && update_if_clean "${@}" 2>&1 | sed 's/^/  /'
+        ensure_no_changes || {
+          pwd && update_if_clean "${@}" 2>&1 | sed 's/^/  /'
+        }
       }
     }
   done
@@ -31,7 +43,17 @@ update_if_clean () {
     return 2
   }
 
-  git merge --ff-only
+  run git merge --ff-only
+}
+
+run () {
+  echo "${FORCE:-##} ${@}"
+
+  [ "${FORCE:+set}" = set ] || {
+    return 0
+  }
+
+  "${@}"
 }
 
 exec 5>/dev/null
