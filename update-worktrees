@@ -113,12 +113,15 @@ ensure_no_local_changes () {
   return `git log --oneline @{u}.. | head -100 | wc -l`
 }
 
+ensure_clean_workspace () {
+  return `git -c color.status=always status -s 2>&1 | tee /dev/stderr | head -100 | wc -l`
+}
+
 merge_if_clean () {
   info "${2} <=[${1}] ${3}"
 
-  changes=`git ss 2>&1 | tee /dev/stderr`
-  [ "${changes:+set}" = set ] && {
-    warning "Changes or untracked detected, not merging."
+  ensure_clean_workspace || {
+    warning "Detected ${?} changed or untracked, not merging."
     return 2
   }
 
@@ -142,7 +145,7 @@ should_force () {
 }
 
 indent_output_from () {
-  "${@}" 2>&1 | sed 's/^/  /'
+  "${@}" 2>&1 | sed 's/^/    /'
 }
 
 info () {
