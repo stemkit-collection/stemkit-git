@@ -1,0 +1,38 @@
+#!/bin/sh
+# vim: ft=sh: sw=2:
+
+main () {
+  root=`git ws` || {
+    echo "ERROR: Not a git workspace: `pwd`" 1>&2
+    exit 2
+  }
+
+  git -C "${root}" tt top 2>&5 | while read top; do
+    cd "${top}" && {
+      set -- `git bbs | awk '$1 == "*" {print $(2), $(NF)}'`
+
+      [ "${#}" -eq 2 ] && {
+        ensure_no_changes || pwd && update_if_clean "${@}" 2>&1 | sed 's/^/  /'
+      }
+    }
+  done
+}
+
+ensure_no_changes () {
+  return `git log --oneline ..@{u} | head -1 | wc -l`
+}
+
+update_if_clean () {
+  echo "## ${1} <= ${2}"
+
+  changes=`git ss 2>&1 | tee /dev/stderr`
+  [ "${changes:+set}" = set ] && {
+    echo "WARNING: Changes or untracked detected, not merging."
+    return 2
+  }
+
+  git merge --ff-only
+}
+
+exec 5>/dev/null
+main "${@}"
