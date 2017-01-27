@@ -52,14 +52,14 @@ usage_and_exit () {
 }
 
 make_worktree () {
-    top=${1}/src
+  top=${1}/src
 
-    [ -e "${top}" ] && {
-      warning "Already exists: ${top}"
-      return 0
-    }
+  [ -e "${top}" ] && {
+    warning "Already exists: ${top}"
+    return 0
+  }
 
-    run git worktree add "${top}" "${1}"
+  run git worktree add "${top}" "${1}"
 }
 
 run () {
@@ -71,7 +71,7 @@ run () {
 }
 
 indent_output_from () {
-  "${@}" 2>&1 | sed 's/^/  /'
+  "${@}" 2>&1 | sed 's/^/    /'
 }
 
 info () {
