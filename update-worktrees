@@ -17,13 +17,13 @@ main () {
   [ "${REMOTE}" = yes ] && {
     run git remote update --prune
 
-    should_force && {
+    [ "${FORCE}" = yes ] && {
       info "Switching to simulation mode (dry-run)"
       unset FORCE
     }
   }
 
-  should_force || {
+  [ "${FORCE}" = yes ] || {
     MERGE=yes
     PUSH=yes
   }
@@ -64,7 +64,7 @@ parse_command_line () {
   for option in "${@}"; do
     case "${option}" in
       --force | -f )
-        FORCE='=='
+        FORCE=yes
       ;;
 
       --dry-run | -n )
@@ -95,7 +95,7 @@ parse_command_line () {
     esac
   done
 
-  should_force || info "Simulation mode (dry-run), use --force for normal run"
+  [ "${FORCE}" = yes ] || info "Simulation mode (dry-run), use --force for normal run"
 }
 
 usage_and_exit () {
@@ -134,14 +134,11 @@ push () {
 }
 
 run () {
-  echo "${FORCE:-##} ${@}"
+  _marker="${FORCE:+==}"
+  echo "${_marker:-##} ${@}"
 
-  should_force || return 0
+  [ "${FORCE}" = yes ] || return 0
   "${@}"
-}
-
-should_force () {
-  test "${FORCE:+set}" = set
 }
 
 indent_output_from () {
