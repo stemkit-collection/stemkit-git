@@ -50,4 +50,4 @@ options_usage () {
   echo "`standard_options_usage`"
 }
 
-. `type "${0}" | awk '{print $(NF)}' | xargs dirname`/ws-sh.lib
+. `type "${0}" | awk '{print $(NF)}' | xargs dirname`/gfb.sh.lib
