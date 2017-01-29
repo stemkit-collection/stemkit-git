@@ -83,10 +83,13 @@ parse_command_line () {
   [ "${#}" -ne 0 ] && usage_and_exit 2 "Too many parameters: ${*}"
 }
 
-# return 0: shift and go on
-# return 1: shift and stop
-# return 2: stop no shift
-# return 3: shift twice, go on
+# @return
+#   0: single option -> shift and go on
+#   1: explicit end of options (--) -> shift and stop
+#   2: implicit end of options -> stop withoug shift
+#   3: option with argument -> shift twice and go on
+#   +: same as 3
+#
 process_option () {
   option=${1}
   argument=${2}
