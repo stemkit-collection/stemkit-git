@@ -1,8 +1,6 @@
 #!/bin/sh
 # vim: ft=sh: sw=2:
 
-unset FORCE
-
 main () {
   parse_command_line "${@}"
 
@@ -11,7 +9,7 @@ main () {
     exit 2
   }
 
-  [ "${FORCE}" = yes ] || info "Simulation mode (dry-run), use --force for normal run"
+  report_simulation_mode
 
   cd "${root}" && {
     run git worktree prune

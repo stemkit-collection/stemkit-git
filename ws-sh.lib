@@ -2,6 +2,17 @@
 
 unset FORCE
 
+report_simulation_mode () {
+  [ "${FORCE}" = yes ] || info "Simulation mode (dry-run), use --force for normal run"
+}
+
+ensure_simulation_mode () {
+  [ "${FORCE}" = yes ] && {
+    info "Switching to simulation mode (dry-run)"
+    unset FORCE
+  }
+}
+
 parse_command_line () {
   while [ ${#} -ne 0 ]; do
     process_option "${1}" "${2}" && shift && continue

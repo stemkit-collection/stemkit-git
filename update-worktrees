@@ -15,15 +15,11 @@ main () {
     exit 2
   }
 
-  [ "${FORCE}" = yes ] || info "Simulation mode (dry-run), use --force for normal run"
+  report_simulation_mode
 
   [ "${REMOTE}" = yes ] && {
     run git remote update --prune
-
-    [ "${FORCE}" = yes ] && {
-      info "Switching to simulation mode (dry-run)"
-      unset FORCE
-    }
+    ensure_simulation_mode
   }
 
   [ "${FORCE}" = yes ] || {
