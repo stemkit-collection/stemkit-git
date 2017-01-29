@@ -42,6 +42,10 @@ process_option () {
   esac
 }
 
+process_parameters () {
+  return ${#}
+}
+
 options_usage () {
   echo "`standard_options_usage`"
 }

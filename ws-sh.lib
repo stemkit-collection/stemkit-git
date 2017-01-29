@@ -44,7 +44,7 @@ parse_command_line () {
     esac
   done
 
-  [ "${#}" -ne 0 ] && usage_and_exit 2 "Too many parameters: ${*}"
+  process_parameters "${@}" || usage_and_exit 2 "Too many parameters: ${*}"
 }
 
 # @return

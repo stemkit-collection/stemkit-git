@@ -31,7 +31,7 @@ main () {
     cd "${top}" && {
       set -- `git bbs | awk '$1 == "*" {print $(2), $(NF)}'`
 
-      [ "${#}" -eq 2 ] || continue
+      [ ${#} -eq 2 ] || continue
 
       pwd="pwd"
       [ "${PUSH}" = yes ] && {
@@ -110,6 +110,10 @@ process_option () {
       process_standard_option "${@}"
     ;;
   esac
+}
+
+process_parameters () {
+  return ${#}
 }
 
 options_usage () {
