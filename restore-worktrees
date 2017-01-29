@@ -11,6 +11,8 @@ main () {
     exit 2
   }
 
+  [ "${FORCE}" = yes ] || info "Simulation mode (dry-run), use --force for normal run"
+
   cd "${root}" && {
     run git worktree prune
 
@@ -20,28 +22,15 @@ main () {
   }
 }
 
-parse_command_line () {
-  for option in "${@}"; do
-    case "${option}" in
-      --force | -f )
-        FORCE=yes
-      ;;
+process_option () {
+  option=${1}
+  argument=${2}
 
-      --dry-run | -n )
-        unset FORCE
-      ;;
-
-      --help | -h )
-        usage_and_exit 0
-      ;;
-
-      *)
-        usage_and_exit 3 "Unsupported parameter: ${option}"
-      ;;
-    esac
-  done
-
-  [ "${FORCE}" = yes ] || info "Simulation mode (dry-run), use --force for normal run"
+  case "${option}" in
+    *)
+      process_standard_option "${@}"
+    ;;
+  esac
 }
 
 usage_and_exit () {

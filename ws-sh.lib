@@ -1,5 +1,75 @@
 # vim: ft=sh: sw=2:
 
+unset FORCE
+
+parse_command_line () {
+  while [ ${#} -ne 0 ]; do
+    process_option "${1}" "${2}" && shift && continue
+
+    case ${?} in
+      1)
+        shift && break
+      ;;
+
+      2)
+        break
+      ;;
+
+      *)
+        shift && [ ${#} -ne 0 ] && shift
+      ;;
+    esac
+  done
+
+  [ "${#}" -ne 0 ] && usage_and_exit 2 "Too many parameters: ${*}"
+}
+
+# @return
+#   0: single option -> shift and go on
+#   1: explicit end of options (--) -> shift and stop
+#   2: implicit end of options -> stop withoug shift
+#   3: option with argument -> shift twice and go on
+#   +: same as 3
+#
+process_standard_option () {
+  option=${1}
+  argument=${2}
+
+  case "${option}" in
+    --force | -f )
+      FORCE=yes
+    ;;
+
+    --dry-run | -n )
+      unset FORCE
+    ;;
+
+    --help | -h )
+      usage_and_exit 0
+    ;;
+
+    -- )
+      return 1
+    ;;
+
+    --*=* )
+      process_option `echo "${option}" | sed 's/=/ /'` || true
+    ;;
+
+    -? | --* )
+      usage_and_exit 3 "Unsupported option: ${option}"
+    ;;
+
+    -* )
+      parse_command_line `echo "${option}" | sed 's/-//g;s/./-& /g'`
+    ;;
+
+    *)
+      return 2
+    ;;
+  esac
+}
+
 run () {
   _marker="${FORCE:+==}"
   echo "${_marker:-##} ${@}"
