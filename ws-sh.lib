@@ -1,7 +1,5 @@
 # vim: ft=sh: sw=2:
 
-unset FORCE
-
 report_simulation_mode () {
   [ "${FORCE}" = yes ] || info "Simulation mode (dry-run), use --force for normal run"
 }
@@ -30,29 +28,35 @@ parse_command_line () {
     process_option "${1}" "${2}" && shift && continue
 
     case ${?} in
-      1)
+      2)
         shift && break
       ;;
 
-      2)
+      3)
         break
       ;;
 
-      *)
+      4)
         shift && [ ${#} -ne 0 ] && shift
       ;;
+
+      *)
+        error 'Internal problem'
+        exit 5
+      ;;
+
     esac
   done
 
-  process_parameters "${@}" || usage_and_exit 2 "Too many parameters: ${*}"
+  process_parameters "${@}" || usage_and_exit 2 "Superfluous parameters: ${*}"
 }
 
 # @return
 #   0: single option -> shift and go on
-#   1: explicit end of options (--) -> shift and stop
-#   2: implicit end of options -> stop withoug shift
-#   3: option with argument -> shift twice and go on
-#   +: same as 3
+#   2: explicit end of options (--) -> shift and stop
+#   3: implicit end of options -> stop withoug shift
+#   4: option with argument -> shift twice and go on
+#   *: error -> report and exit
 #
 process_standard_option () {
   option=${1}
@@ -72,7 +76,7 @@ process_standard_option () {
     ;;
 
     -- )
-      return 1
+      return 2
     ;;
 
     --*=* )
@@ -88,7 +92,7 @@ process_standard_option () {
     ;;
 
     *)
-      return 2
+      return 3
     ;;
   esac
 }
@@ -106,7 +110,7 @@ usage_and_exit () {
 
 run () {
   _marker="${FORCE:+==}"
-  echo "${_marker:-##} ${@}"
+  echo "${_marker:-##} ${@}" 1>&2
 
   [ "${FORCE}" = yes ] || return 0
   "${@}"
@@ -128,6 +132,10 @@ error () {
   log ERROR "${@}"
 }
 
+debug () {
+  [ "${DEBUG}" = yes ] && log DEBUG "${@}"
+}
+
 log () {
   label=${1}
   shift
@@ -139,7 +147,25 @@ usage () {
   echo "USAGE: ${script_name} ${@}" 1>&2
 }
 
+contains_item() {
+  item=${1}
+  shift
+
+  for element in "${@}"; do
+    [ "${element}" = "${item}" ] && return 0
+  done
+
+  return 1
+}
+
 exec 5>/dev/null
 script_name=`basename "${0}"`
+
+FORCE=no
+DEBUG=no
+
+contains_item "${script_name}" ${TRACE} && {
+  DEBUG=yes
+}
 
 main "${@}"

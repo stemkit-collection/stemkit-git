@@ -1,11 +1,9 @@
 #!/bin/sh
 # vim: ft=sh: sw=2:
 
-unset REMOTE
-unset MERGE
-unset PUSH
-
+REMOTE=no
 MERGE=yes
+PUSH=no
 
 main () {
   parse_command_line "${@}"
@@ -86,7 +84,7 @@ push () {
 }
 
 process_option () {
-  echo ">>> O: ${1} (${2})"
+  debug "O: ${1} (${2})"
 
   option=${1}
   argument=${2}
@@ -99,7 +97,7 @@ process_option () {
 
     --push | -p )
       PUSH=yes
-      unset MERGE
+      MERGE=no
     ;;
 
     --merge | -m )
