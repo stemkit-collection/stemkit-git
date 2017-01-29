@@ -22,7 +22,7 @@ main () {
     ensure_simulation_mode
   }
 
-  [ "${FORCE}" = yes ] || {
+  is_simulation_mode && {
     MERGE=yes
     PUSH=yes
   }
@@ -94,7 +94,7 @@ process_option () {
   case "${option}" in
     --remote | -r )
       REMOTE=yes
-      FORCE=yes
+      disable_simulation_mode
     ;;
 
     --push | -p )

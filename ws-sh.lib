@@ -13,6 +13,18 @@ ensure_simulation_mode () {
   }
 }
 
+is_simulation_mode () {
+  test "${FORCE}" != yes
+}
+
+enable_simulation_mode () {
+  unset FORCE
+}
+
+disable_simulation_mode () {
+  FORCE=yes
+}
+
 parse_command_line () {
   while [ ${#} -ne 0 ]; do
     process_option "${1}" "${2}" && shift && continue
