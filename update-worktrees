@@ -63,22 +63,35 @@ main () {
 
 parse_command_line () {
   while [ ${#} -ne 0 ]; do
-    process_option "${1}" "${2}" || {
-      case ${?} in
-        1) shift; break ;;
-        2) break ;;
-        3) shift ;;
-      esac
-      [ ${#} -eq 0 ] && break
-    }
-    shift
+    process_option "${1}" "${2}" && shift && continue
+
+    case ${?} in
+      1)
+        shift && break
+      ;;
+
+      2)
+        break
+      ;;
+
+      *)
+        shift && [ ${#} -ne 0 ] && shift
+      ;;
+    esac
   done
 
   [ "${#}" -ne 0 ] && usage_and_exit 2 "Too many parameters: ${*}"
 }
 
+# return 0: shift and go on
+# return 1: shift and stop
+# return 2: stop no shift
+# return 3: shift twice, go on
 process_option () {
-  case "${1}" in
+  option=${1}
+  argument=${2}
+
+  case "${option}" in
     --force | -f )
       FORCE=yes
     ;;
@@ -109,21 +122,22 @@ process_option () {
       return 1
     ;;
 
-    -[fnrpmh]* )
-      set -- `echo "${1}" | sed 's/-//g;s/./-& /g'`
-      parse_command_line "${@}"
+    --*=* )
+      process_option `echo "${option}" | sed 's/=/ /'` || true
     ;;
 
-    -*)
+    -? | --* )
       usage_and_exit 3 "Unsupported option: ${1}"
+    ;;
+
+    -* )
+      parse_command_line `echo "${option}" | sed 's/-//g;s/./-& /g'`
     ;;
 
     *)
       return 2
     ;;
   esac
-
-  return 0
 }
 
 usage_and_exit () {
