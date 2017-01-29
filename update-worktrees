@@ -115,7 +115,7 @@ process_parameters () {
 }
 
 options_usage () {
-  echo "`standard_options_usage`[--remote | -r][--push | -p][--merge | -m]"
+  echo "`standard_options_usage`[--remote|-r][--push|-p][--merge|-m]"
 }
 
 . `type "${0}" | awk '{print $(NF)}' | xargs dirname`/ws-sh.lib
