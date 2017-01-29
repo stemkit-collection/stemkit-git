@@ -20,6 +20,17 @@ main () {
   }
 }
 
+make_worktree () {
+  top=${1}/src
+
+  [ -e "${top}" ] && {
+    warning "Already exists: ${top}"
+    return 0
+  }
+
+  run git worktree add "${top}" "${1}"
+}
+
 process_option () {
   option=${1}
   argument=${2}
@@ -36,17 +47,6 @@ usage_and_exit () {
 
   usage "[--help | -h][--force | -f][--dry-run | -n]"
   exit "${1}"
-}
-
-make_worktree () {
-  top=${1}/src
-
-  [ -e "${top}" ] && {
-    warning "Already exists: ${top}"
-    return 0
-  }
-
-  run git worktree add "${top}" "${1}"
 }
 
 . `type "${0}" | awk '{print $(NF)}' | xargs dirname`/ws-sh.lib
