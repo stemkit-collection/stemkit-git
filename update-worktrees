@@ -3,8 +3,9 @@
 
 unset REMOTE
 unset FORCE
-unset MERGE
 unset PUSH
+
+MERGE=yes
 
 main () {
   parse_command_line "${@}"
@@ -13,6 +14,8 @@ main () {
     error "Not a git workspace: `pwd`"
     exit 2
   }
+
+  [ "${FORCE}" = yes ] || info "Simulation mode (dry-run), use --force for normal run"
 
   [ "${REMOTE}" = yes ] && {
     run git remote update --prune
@@ -59,43 +62,68 @@ main () {
 }
 
 parse_command_line () {
-  MERGE=yes
-
-  for option in "${@}"; do
-    case "${option}" in
-      --force | -f )
-        FORCE=yes
-      ;;
-
-      --dry-run | -n )
-        unset FORCE
-      ;;
-
-      --remote | -r )
-        REMOTE=yes
-        FORCE=yes
-      ;;
-
-      --push | -p )
-        PUSH=yes
-        unset MERGE
-      ;;
-
-      --merge | -m )
-        MERGE=yes
-      ;;
-
-      --help | -h )
-        usage_and_exit 0
-      ;;
-
-      *)
-        usage_and_exit 3 "Unsupported parameter: ${option}"
-      ;;
-    esac
+  while [ ${#} -ne 0 ]; do
+    process_option "${1}" "${2}" || {
+      case ${?} in
+        1) shift; break ;;
+        2) break ;;
+        3) shift ;;
+      esac
+      [ ${#} -eq 0 ] && break
+    }
+    shift
   done
 
-  [ "${FORCE}" = yes ] || info "Simulation mode (dry-run), use --force for normal run"
+  [ "${#}" -ne 0 ] && usage_and_exit 2 "Too many parameters: ${*}"
+}
+
+process_option () {
+  case "${1}" in
+    --force | -f )
+      FORCE=yes
+    ;;
+
+    --dry-run | -n )
+      unset FORCE
+    ;;
+
+    --remote | -r )
+      REMOTE=yes
+      FORCE=yes
+    ;;
+
+    --push | -p )
+      PUSH=yes
+      unset MERGE
+    ;;
+
+    --merge | -m )
+      MERGE=yes
+    ;;
+
+    --help | -h )
+      usage_and_exit 0
+    ;;
+
+    -- )
+      return 1
+    ;;
+
+    -[fnrpmh]* )
+      set -- `echo "${1}" | sed 's/-//g;s/./-& /g'`
+      parse_command_line "${@}"
+    ;;
+
+    -*)
+      usage_and_exit 3 "Unsupported option: ${1}"
+    ;;
+
+    *)
+      return 2
+    ;;
+  esac
+
+  return 0
 }
 
 usage_and_exit () {
