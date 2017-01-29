@@ -42,11 +42,8 @@ process_option () {
   esac
 }
 
-usage_and_exit () {
-  [ "${2:+set}" = set ] && error "${2}"
-
-  usage "[--help | -h][--force | -f][--dry-run | -n]"
-  exit "${1}"
+options_usage () {
+  echo "`standard_options_usage`"
 }
 
 . `type "${0}" | awk '{print $(NF)}' | xargs dirname`/ws-sh.lib

@@ -112,11 +112,8 @@ process_option () {
   esac
 }
 
-usage_and_exit () {
-  [ "${2:+set}" = set ] && error "${2}"
-
-  usage "[--help | -h][--force | -f][--dry-run | -n][--remote | -r][--push | -p][--merge | -m]"
-  exit "${1}"
+options_usage () {
+  echo "`standard_options_usage`[--remote | -r][--push | -p][--merge | -m]"
 }
 
 . `type "${0}" | awk '{print $(NF)}' | xargs dirname`/ws-sh.lib

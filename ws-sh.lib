@@ -93,6 +93,17 @@ process_standard_option () {
   esac
 }
 
+standard_options_usage () {
+  echo '[--help | -h][--force | -f][--dry-run | -n]'
+}
+
+usage_and_exit () {
+  [ "${2:+set}" = set ] && error "${2}"
+
+  usage "`options_usage`"
+  exit "${1}"
+}
+
 run () {
   _marker="${FORCE:+==}"
   echo "${_marker:-##} ${@}"
