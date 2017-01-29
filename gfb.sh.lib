@@ -1,54 +1,7 @@
 # vim: ft=sh: sw=2:
 
-report_simulation_mode () {
-  [ "${FORCE}" = yes ] || info "Simulation mode (dry-run), use --force for normal run"
-}
-
-ensure_simulation_mode () {
-  [ "${FORCE}" = yes ] && {
-    info "Switching to simulation mode (dry-run)"
-    unset FORCE
-  }
-}
-
-is_simulation_mode () {
-  test "${FORCE}" != yes
-}
-
-enable_simulation_mode () {
-  unset FORCE
-}
-
-disable_simulation_mode () {
-  FORCE=yes
-}
-
-parse_command_line () {
-  while [ ${#} -ne 0 ]; do
-    process_option "${1}" "${2}" && shift && continue
-
-    case ${?} in
-      2)
-        shift && break
-      ;;
-
-      3)
-        break
-      ;;
-
-      4)
-        shift && [ ${#} -ne 0 ] && shift
-      ;;
-
-      *)
-        error 'Internal problem'
-        exit 5
-      ;;
-
-    esac
-  done
-
-  process_parameters "${@}" || usage_and_exit 2 "Superfluous parameters: ${*}"
+standard_options_usage () {
+  echo '[-x][--help|-h][--force|-f][--dry-run|-n][--quiet|-q][--vebose|-v]'
 }
 
 # @return
@@ -56,7 +9,7 @@ parse_command_line () {
 #   2: explicit end of options (--) -> shift and stop
 #   3: implicit end of options -> stop withoug shift
 #   4: option with argument -> shift twice and go on
-#   *: error -> report and exit
+#   *: error -> report and exit with failure
 #
 process_standard_option () {
   option=${1}
@@ -109,8 +62,55 @@ process_standard_option () {
   esac
 }
 
-standard_options_usage () {
-  echo '[-x][--help|-h][--force|-f][--dry-run|-n][--quiet|-q][--vebose|-v]'
+parse_command_line () {
+  while [ ${#} -ne 0 ]; do
+    process_option "${1}" "${2}" && shift && continue
+
+    case ${?} in
+      2)
+        shift && break
+      ;;
+
+      3)
+        break
+      ;;
+
+      4)
+        shift && [ ${#} -ne 0 ] && shift
+      ;;
+
+      *)
+        error 'Internal problem'
+        exit 5
+      ;;
+
+    esac
+  done
+
+  process_parameters "${@}" || usage_and_exit 2 "Superfluous parameters: ${*}"
+}
+
+report_simulation_mode () {
+  [ "${FORCE}" = yes ] || info "Simulation mode (dry-run), use --force for normal run"
+}
+
+ensure_simulation_mode () {
+  [ "${FORCE}" = yes ] && {
+    info "Switching to simulation mode (dry-run)"
+    unset FORCE
+  }
+}
+
+is_simulation_mode () {
+  test "${FORCE}" != yes
+}
+
+enable_simulation_mode () {
+  unset FORCE
+}
+
+disable_simulation_mode () {
+  FORCE=yes
 }
 
 usage_and_exit () {
