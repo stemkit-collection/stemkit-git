@@ -1,10 +1,41 @@
 # vim: ft=sh: sw=2:
 
+# @expects
+#   main "${@}" => exit code
+#   process_option <option> [ <argument> ] => 0, 2, 3, 4 (see declaration)
+#   process_parameters "${@}" => 0: success, otherwise exits with error
+#   options_usage => ?: ignored, echo string to stdout
+#
+# @provides
+#   parse_command_line "${@}"
+#   process_standard_option <option> [ <argument> ]
+#   standard_options_usage
+#   usage_and_exit <exit-code> [ <error-message> ]
+#
+#   report_simulation_mode
+#   ensure_simulation_mode
+#   is_simulation_mode
+#   enable_simulation_mode
+#   disable_simulation_mode
+#
+#   run <command-line>
+#   indent_output_from <command-line>
+#
+#   log <level-label> <message>
+#   error <message>
+#   warning <message>
+#   info <message>
+#   details <message>
+#   debug <message>
+#   output <descriptor> <message>
+#
+#   contains_item <item> [ <string> ... ]
+
 standard_options_usage () {
   echo '[-x][--help|-h][--force|-f][--dry-run|-n][--quiet|-q][--vebose|-v]'
 }
 
-# @return
+# @returns
 #   0: single option -> shift and go on
 #   2: explicit end of options (--) -> shift and stop
 #   3: implicit end of options -> stop withoug shift
@@ -17,11 +48,11 @@ process_standard_option () {
 
   case "${option}" in
     --force | -f )
-      FORCE=yes
+      disable_simulation_mode
     ;;
 
     --dry-run | -n )
-      unset FORCE
+      enable_simulation_mode
     ;;
 
     --quiet | -q )
@@ -164,10 +195,10 @@ usage () {
 }
 
 output () {
-  stream=${1}
+  descriptor=${1}
   shift
 
-  echo "${@}" 1>&"${stream}"
+  echo "${@}" 1>&"${descriptor}"
 }
 
 contains_item() {
