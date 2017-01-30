@@ -1,5 +1,10 @@
 # vim: ft=sh: sw=2:
 
+# To use this library, please add the following line to the end of your
+# shell script file:
+#
+# . `type "${0}" | awk '{print $(NF)}' | xargs dirname`/gfb.sh.lib
+
 # @expects
 #   main "${@}" => exit code
 #   process_option <option> [ <argument> ] => 0, 2, 3, 4 (see declaration)
