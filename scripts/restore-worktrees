@@ -5,20 +5,14 @@
 main () {
   parse_command_line "${@}"
 
-  root=`git ws 2>&5` || {
-    error "Not a git workspace: `pwd`"
-    exit 2
-  }
-
+  ensure_git_workspace
   report_simulation_mode
 
-  cd "${root}" && {
-    run git worktree prune
+  run git worktree prune
 
-    git branch | grep -v '^[*]' | while read line; do
-      make_worktree ${line} || break
-    done
-  }
+  git branch | grep -v '^[*]' | while read line; do
+    make_worktree ${line} || break
+  done
 }
 
 make_worktree () {

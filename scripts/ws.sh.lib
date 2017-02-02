@@ -1,3 +1,9 @@
 # vim: ft=sh: sw=2:
 # Author: Gennady Bystritsky (bystr@mac.com)
 
+ensure_git_workspace () {
+  root=`git ws 2>&5` && cd "${root}" || {
+    error "Not a git workspace: `pwd`"
+    exit 2
+  }
+}

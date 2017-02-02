@@ -9,11 +9,7 @@ PUSH=no
 main () {
   parse_command_line "${@}"
 
-  root=`git ws 2>&5` || {
-    error "Not a git workspace: `pwd`"
-    exit 2
-  }
-
+  ensure_git_workspace
   report_simulation_mode
 
   [ "${REMOTE}" = yes ] && {
@@ -26,7 +22,7 @@ main () {
     PUSH=yes
   }
 
-  git -C "${root}" tt top 2>&5 | while read top; do
+  git tt top 2>&5 | while read top; do
     cd "${top}" && {
       set -- `git bbs | awk '$1 == "*" {print $(2), $(NF)}'`
 
