@@ -24,32 +24,38 @@ main () {
 
   git tt top 2>&5 | while read top; do
     cd "${top}" && {
-      set -- `git bbs | awk '$1 == "*" {print $(2), $(NF)}'`
-
-      [ ${#} -eq 2 ] || continue
-
-      pwd="pwd"
-      [ "${PUSH}" = yes ] && {
-        ensure_no_local_changes || {
-          number=${?}
-          "${pwd}"
-
-          indent_output_from push "${number}" "${@}"
-          pwd="true"
-        }
-      }
-
-      [ "${MERGE}" = yes ] && {
-        ensure_no_remote_changes || {
-          number=${?}
-          "${pwd}"
-
-          indent_output_from merge_if_clean "${number}" "${@}"
-          pwd="true"
-        }
-      }
+      sync_branch `local_with_remote_if_current_and_differ`
     }
   done
+}
+
+local_with_remote_if_current_and_differ () {
+  git bbs | awk '$1 == "*" {print $(2), $(NF)}'
+}
+
+sync_branch () {
+  [ ${#} -eq 2 ] || return
+
+  pwd="pwd"
+  [ "${PUSH}" = yes ] && {
+    ensure_no_local_changes || {
+      number=${?}
+      "${pwd}"
+
+      indent_output_from push "${number}" "${@}"
+      pwd="true"
+    }
+  }
+
+  [ "${MERGE}" = yes ] && {
+    ensure_no_remote_changes || {
+      number=${?}
+      "${pwd}"
+
+      indent_output_from merge_if_clean "${number}" "${@}"
+      pwd="true"
+    }
+  }
 }
 
 ensure_no_remote_changes () {
