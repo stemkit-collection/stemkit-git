@@ -1,11 +1,10 @@
 # vim: ft=sh: sw=2:
+# Author: Gennady Bystritsky (bystr@mac.com)
 
-# To use this library, please add the following line at the top of your
+# To use this library, please add the following lines to the end of your
 # shell script file:
-#       . `type "${0}" | awk '{print $(NF)}' | xargs dirname`/gfb.sh.lib
-#
-# And this line at a very end:
-#       main "${@}"
+#       . `type "${0}" | awk '{print $(NF)}' | xargs dirname`/core.sh.lib
+#       start [import=<library>[,<library>]...] "${@}"
 
 # @expects
 #   main "${@}" => exit code
@@ -219,7 +218,36 @@ contains_item() {
   return 1
 }
 
+full_prog_path () {
+  type "${1}" | awk '{print $(NF)}'
+}
+
+import () {
+  for item in "${@}"; do
+    item="${script_folder}/${item}.sh.lib"
+
+    [ -f "${item}" ] || {
+      error "No library: ${item}"
+      exit 5
+    }
+
+    . "${item}"
+  done
+}
+
+start () {
+  case "${1}" in
+    import=* )
+      import `echo "${1}" | sed 's/^.*=//;s/[,:]/ /g'`
+      shift
+    ;;
+  esac
+
+  main "${@}"
+}
+
 exec 5>/dev/null
+script_folder=`full_prog_path "${0}" | xargs dirname`
 script_name=`basename "${0}"`
 
 FORCE=no

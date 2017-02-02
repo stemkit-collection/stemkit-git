@@ -1,7 +1,6 @@
 #!/bin/sh
 # vim: ft=sh: sw=2:
-
-. `type "${0}" | awk '{print $(NF)}' | xargs dirname`/gfb.sh.lib
+# Author: Gennady Bystritsky (bystr@mac.com)
 
 main () {
   parse_command_line "${@}"
@@ -52,4 +51,5 @@ options_usage () {
   echo "`standard_options_usage`"
 }
 
-main "${@}"
+. `type "${0}" | awk '{print $(NF)}' | xargs dirname`/core.sh.lib
+start import=ws "${@}"
