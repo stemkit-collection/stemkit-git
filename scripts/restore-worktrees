@@ -2,6 +2,8 @@
 # vim: ft=sh: sw=2:
 # Author: Gennady Bystritsky (bystr@mac.com)
 
+unset DIRECTORY OFFSET
+
 main () {
   parse_command_line "${@}"
 
@@ -16,7 +18,7 @@ main () {
 }
 
 make_worktree () {
-  top=${1}/src
+  top=${DIRECTORY:-'.'}/${1}/${OFFSET:-'src'}
 
   [ -e "${top}" ] && {
     warning "Already exists: ${top}"
@@ -31,6 +33,16 @@ process_option () {
   argument=${2}
 
   case "${option}" in
+    --directory | -d )
+      DIRECTORY="${argument}"
+      return 4
+    ;;
+
+    --offset | -o )
+      OFFSET="${argument}"
+      return 4
+    ;;
+
     *)
       process_standard_option "${@}"
     ;;
@@ -42,7 +54,7 @@ process_parameters () {
 }
 
 options_usage () {
-  echo "`standard_options_usage`"
+  echo "`standard_options_usage`[--directory|-d <folder=.>][--offset|-o <folder=src>"
 }
 
 . `type "${0}" | awk '{print $(NF)}' | xargs dirname`/core.sh.lib
