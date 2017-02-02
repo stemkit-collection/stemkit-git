@@ -1,6 +1,8 @@
 #!/bin/sh
 # vim: ft=sh: sw=2:
 
+. `type "${0}" | awk '{print $(NF)}' | xargs dirname`/gfb.sh.lib
+
 REMOTE=no
 MERGE=yes
 PUSH=no
@@ -118,4 +120,4 @@ options_usage () {
   echo "`standard_options_usage`[--remote|-r][--push|-p][--merge|-m]"
 }
 
-. `type "${0}" | awk '{print $(NF)}' | xargs dirname`/gfb.sh.lib
+main "${@}"

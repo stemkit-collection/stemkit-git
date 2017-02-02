@@ -1,9 +1,11 @@
 # vim: ft=sh: sw=2:
 
-# To use this library, please add the following line to the end of your
+# To use this library, please add the following line at the top of your
 # shell script file:
+#       . `type "${0}" | awk '{print $(NF)}' | xargs dirname`/gfb.sh.lib
 #
-# . `type "${0}" | awk '{print $(NF)}' | xargs dirname`/gfb.sh.lib
+# And this line at a very end:
+#       main "${@}"
 
 # @expects
 #   main "${@}" => exit code
@@ -228,5 +230,3 @@ VERBOSE=no
 contains_item "${script_name}" ${TRACE} && {
   DEBUG=yes
 }
-
-main "${@}"
