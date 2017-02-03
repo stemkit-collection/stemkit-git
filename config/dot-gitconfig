@@ -1,0 +1,21 @@
+[user]
+    name = Doe, John
+    email = john.doe@acme.com
+
+[diff]
+    renames = copy
+
+[color]
+    ui = auto
+
+[color "branch"]
+    current = green nobold
+    remote = cyan dim
+    local = white dim
+    upstream = yellow dim
+
+[push]
+    default = upstream
+
+[include]
+    path = .gitaliases
