@@ -218,8 +218,17 @@ contains_item() {
   return 1
 }
 
+convert_input_to_full_path () {
+  while read path; do
+    name=`basename "${path}"`
+    folder=`dirname "${path}"`
+
+    (cd "${folder}" 2>&5 && echo "`pwd`/${name}")
+  done
+}
+
 full_prog_path () {
-  type "${1}" | awk '{print $(NF)}'
+  type "${1}" | awk '{print $(NF)}' | convert_input_to_full_path
 }
 
 import () {
@@ -247,8 +256,10 @@ start () {
 }
 
 exec 5>/dev/null
-script_folder=`full_prog_path "${0}" | xargs dirname`
-script_name=`basename "${0}"`
+
+script_full_path=`full_prog_path "${0}"`
+script_folder=`dirname "${script_full_path}"`
+script_name=`basename "${script_full_path}"`
 
 FORCE=no
 DEBUG=no

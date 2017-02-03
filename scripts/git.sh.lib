@@ -1,0 +1,7 @@
+# vim: ft=sh: sw=2:
+# Author: Gennady Bystritsky (bystr@mac.com)
+
+report_git_sh_lib_found () {
+  info "git.sh.lib: ${script_full_path}: ${@}"
+}
+

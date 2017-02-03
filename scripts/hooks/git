@@ -1,0 +1,10 @@
+#!/bin/sh
+# vim: ft=sh: sw=2:
+# Author: Gennady Bystritsky (bystr@mac.com)
+
+main () {
+  report_git_sh_lib_found "${@}"
+}
+
+. `type "${0}" | awk '{print $(NF)}' | xargs dirname`/../core.sh.lib
+start import=../git "${@}"
