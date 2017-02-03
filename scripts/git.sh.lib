@@ -1,7 +1,12 @@
 # vim: ft=sh: sw=2:
 # Author: Gennady Bystritsky (bystr@mac.com)
 
+# To use this library, please add the following lines to the end of your
+# shell script file:
+#       . `type "${0}" | awk '{print $(NF)}' | xargs dirname`/core.sh.lib
+#       start import=git[,<library>]... "${@}"
+
 report_git_sh_lib_found () {
-  info "git.sh.lib: ${script_full_path}: ${@}"
+  debug "git.sh.lib: ${script_full_path}: ${@}"
 }
 
