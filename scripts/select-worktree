@@ -1,0 +1,29 @@
+#!/bin/sh
+# vim: ft=sh: sw=2:
+# Author: Gennady Bystritsky (bystr@mac.com)
+
+main () {
+  parse_command_line "${@}"
+}
+
+process_option () {
+  option=${1}
+  argument=${2}
+
+  case "${option}" in
+    *)
+      process_standard_option "${@}"
+    ;;
+  esac
+}
+
+process_parameters () {
+  return ${#}
+}
+
+options_usage () {
+  echo "`standard_options_usage` [ <branch-name> ]"
+}
+
+. `type "${0}" | awk '{print $(NF)}' | xargs dirname`/core.sh.lib
+start import=ws "${@}"
