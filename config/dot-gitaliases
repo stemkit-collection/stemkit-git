@@ -33,7 +33,7 @@
     su = ! ${git:-git} launch-in \"${GIT_PREFIX}\" ss --untracked-files=all
     si = ! ${git:-git} launch-in \"${GIT_PREFIX}\" ss --ignored
 
-    visualize = ! ruby -e \"puts ARGV.map{|s|s.gsub(/.*\\s.*/,&:inspect).gsub(/%C[(].+?[)]/,'')}.join(' ')\" -- ${git:-git}
+    visualize = ! ruby -e \"puts ARGV.map{|s|s.gsub(/.*\\s.*/,&:inspect).gsub(/%C[(].+?[)]/,'')}.join(' ')\" -- git
     what = ! __sk_visualize_sk__=visualize ${git:-git} launch-in \"${GIT_PREFIX}\"
 
     log-name-wrap = ! echo \"%C(yellow dim)${1}%C(reset)%C(auto)\" "#"
