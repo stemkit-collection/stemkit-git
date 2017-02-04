@@ -6,56 +6,60 @@ main () {
   disable_simulation_mode
   setup_git_environment
 
+  __git_exec__=exec
   git "${@}"
 }
 
 git () {
-  run "${SK_ORIGINAL_GIT:?}" -c include.path="${SK_GIT_ALIASES:?}" "${@}"
+  __git__ ${__git_exec__} "${SK_GIT_REAL:?}" -c include.path="${SK_GIT_ALIASES:?}" "${@}"
+}
+
+__git__() {
+  [ "${DEBUG}" = yes ] && output 2 == "${@}"
+  "${@}"
 }
 
 setup_git_environment () {
-  unset top
+  unset __git_ws_root__
 
-  ensure_original_git
+  ensure_git_real
   ensure_git_aliases
 }
 
-figure_top_folder () {
-  [ "${top:+set}" = set ] && return
+from_ws_root () {
+  for item in "${@}"; do
+    echo "${__git_ws_root__}/${item}"
+  done
+}
+
+figure_ws_root_unless_set () {
+  [ "${1:+set}" = set ] && return 1
+  [ "${__git_ws_root__:+set}" = set ] && return 0
 
   for marker in ${script_folder}/{.,..,../..,../../..}/.git; do
     [ -d "${marker}" ] && {
-      top=`echo "${marker}" | convert_input_to_full_path | xargs dirname`
-      return
+      __git_ws_root__=`echo "${marker}" | convert_input_to_full_path | xargs dirname`
+      return 0
     }
   done
 
-  error 'No top'
+  error 'No workspace root'
   exit 2
 }
 
-ensure_original_git () {
-  [ "${SK_ORIGINAL_GIT:+set}" = set ] && return
+ensure_git_real () {
+  figure_ws_root_unless_set "${SK_GIT_REAL}" || return
+  hook=`from_ws_root scripts/hooks/git`
 
-  figure_top_folder
-  set -- `find_in_path git`
+  for item in `find_in_path git`; do
+    [ "${item}" != "${hook}" ] && {
+      SK_GIT_REAL=${item}
+      git=${hook}
 
-  argc=${#}
-  path_ready=no
-  hook=${top}/scripts/hooks/git
-
-  while [ ${#} -ne 0 ]; do
-    [ "${1}" != "${hook}" ] && {
-      [ "${path_ready}" = no ] && {
-        PATH=`dirname "${hook}"`:${PATH}
-        export PATH
-      }
-
-      SK_ORIGINAL_GIT=${1} export SK_ORIGINAL_GIT
+      export SK_GIT_REAL git
       return
     }
 
-    [ ${#} = "${argc}" ] && path_ready=yes
     shift
   done
 
@@ -74,17 +78,15 @@ find_in_path () {
 }
 
 ensure_git_aliases () {
-  [ "${SK_GIT_ALIASES:+set}" = set ] && return
+  figure_ws_root_unless_set "${SK_GIT_ALIASES}" || return
+  aliases=`from_ws_root config/dot-gitaliases`
 
-  figure_top_folder
-  SK_GIT_ALIASES=${top}/config/dot-gitaliases
-
-  [ -f "${SK_GIT_ALIASES}" ] && {
-    export SK_GIT_ALIASES
+  [ -f "${aliases}" ] && {
+    SK_GIT_ALIASES=${aliases} export SK_GIT_ALIASES
     return
   }
 
-  error "git aliases missing: ${SK_GIT_ALIASES:-'???'}"
+  error "Missing git aliases: ${aliases:-'???'}"
   exit 3
 }
 
