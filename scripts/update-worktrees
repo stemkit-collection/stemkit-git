@@ -8,6 +8,7 @@ PUSH=no
 
 main () {
   parse_command_line "${@}"
+  setup_git_environment
 
   ensure_git_workspace
   report_simulation_mode
@@ -122,4 +123,4 @@ options_usage () {
 }
 
 . `type "${0}" | awk '{print $(NF)}' | xargs dirname`/core.sh.lib
-start import=ws "${@}"
+start import=ws,git "${@}"

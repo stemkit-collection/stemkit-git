@@ -11,7 +11,7 @@ report_ws_sh_lib_found () {
 }
 
 ensure_git_workspace () {
-  root=`git ws 2>&5` && cd "${root}" || {
+  root=`git ws` && cd "${root}" || {
     error "Not a git workspace: `pwd`"
     exit 2
   }

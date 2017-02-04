@@ -244,6 +244,16 @@ import () {
   done
 }
 
+find_in_path () {
+  for folder in `echo "${PATH}" | sed 's/:/ /g'`; do
+    path=${folder}/${1}
+
+    [ "${path:+set}" = set -a -x "${path}" ] && {
+      echo "${path}" | convert_input_to_full_path
+    }
+  done
+}
+
 start () {
   case "${1}" in
     import=* )
