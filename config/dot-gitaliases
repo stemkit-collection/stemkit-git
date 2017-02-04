@@ -25,19 +25,19 @@
 
     launch-in = ! e=`git -C \"${1}\" rev-parse --local-env-vars` && unset ${e} && git -C
 
-    ca = ! git launch-in \"${GIT_PREFIX}\" ${__visualize__} commit -a
-    co = ! git launch-in \"${GIT_PREFIX}\" ${__visualize__} checkout
+    ca = ! git launch-in \"${GIT_PREFIX}\" ${__sk_visualize_sk__} commit -a
+    co = ! git launch-in \"${GIT_PREFIX}\" ${__sk_visualize_sk__} checkout
 
-    ss = ! git launch-in \"${GIT_PREFIX}\" ${__visualize__} status -s
+    ss = ! git launch-in \"${GIT_PREFIX}\" ${__sk_visualize_sk__} status -s
     sb = ! git launch-in \"${GIT_PREFIX}\" ss --branch
     su = ! git launch-in \"${GIT_PREFIX}\" ss --untracked-files=all
     si = ! git launch-in \"${GIT_PREFIX}\" ss --ignored
 
     visualize = ! ruby -e \"puts ARGV.map{|s|s.gsub(/.*\\s.*/,&:inspect).gsub(/%C[(].+?[)]/,'')}.join(' ')\" -- git
-    what = ! __visualize__=visualize git launch-in \"${GIT_PREFIX}\"
+    what = ! __sk_visualize_sk__=visualize git launch-in \"${GIT_PREFIX}\"
 
     log-name-wrap = ! echo \"%C(yellow dim)${1}%C(reset)%C(auto)\" "#"
-    log-date-as = ! sh -c 'git launch-in \"${GIT_PREFIX}\" ${__visualize__} log --date=\"format:%F %T\" --pretty=format:\"${0}\" \"${@}\"'
+    log-date-as = ! sh -c 'git launch-in \"${GIT_PREFIX}\" ${__sk_visualize_sk__} log --date=\"format:%F %T\" --pretty=format:\"${0}\" \"${@}\"'
     log-with-header = ! sh -c 'git launch-in \"${GIT_PREFIX}\" log-date-as \"%C(auto)`printf %78s|sed s/./-/g`%+D%+h (%p) | `git log-name-wrap %cn` | %cd (%cr) ${0}\" \"${@}\"'
 
     labeled-rev-parse-show = ! s=`git launch-in \"${1}\" rev-parse --show-${2}` c=${?} sh -c "'echo ${3} ${s:-./}; exit ${c}'" --
@@ -79,12 +79,12 @@
     lpb  = ! git launch-in \"${GIT_PREFIX}\" lpf  `git branch-rev-range \"${@}\"` "#"
     lpwb = ! git launch-in \"${GIT_PREFIX}\" lpwf `git branch-rev-range \"${@}\"` "#"
 
-    lg   = ! git launch-in \"${GIT_PREFIX}\" ${__visualize__} log --graph --oneline --decorate --all
+    lg   = ! git launch-in \"${GIT_PREFIX}\" ${__sk_visualize_sk__} log --graph --oneline --decorate --all
     llg  = ! git launch-in \"${GIT_PREFIX}\" ll --graph
 
-    dd   = ! git launch-in \"${GIT_PREFIX}\" replace-prefixes ${__visualize__} diff
+    dd   = ! git launch-in \"${GIT_PREFIX}\" replace-prefixes ${__sk_visualize_sk__} diff
     ds   = ! git launch-in \"${GIT_PREFIX}\" dd --staged
-    dn   = ! git launch-in \"${GIT_PREFIX}\" ${__visualize__} diff --name-status
+    dn   = ! git launch-in \"${GIT_PREFIX}\" ${__sk_visualize_sk__} diff --name-status
     dr   = ! git launch-in \"${GIT_PREFIX}\" dn --relative
 
     ddw  = ! git launch-in \"${GIT_PREFIX}\" dd --color-words
@@ -96,15 +96,15 @@
     ddwb = ! git launch-in \"${GIT_PREFIX}\" ddw `git branch-rev-range \"${@}\"` "#"
 
     tt   = ! find . -maxdepth 5 -name .git -exec dirname {} "';'" | xargs -I{} sh -c "'git -C \"{}\" top \"##\" 1>&2; git -C \"{}\" \"${@}\"'" --
-    uu   = ! ws=`git ws` && ${__visualize__:+echo} sh \"${ws}\"/scripts/update-worktrees
-    wtt  = ! ws=`git ws` && ${__visualize__:+echo} git -C \"${ws}\" tt
+    uu   = ! ws=`git ws` && ${__sk_visualize_sk__:+echo} sh \"${ws}\"/scripts/update-worktrees
+    wtt  = ! ws=`git ws` && ${__sk_visualize_sk__:+echo} git -C \"${ws}\" tt
 
-    ww   = ! git ${__visualize__} worktree
+    ww   = ! git ${__sk_visualize_sk__} worktree
     wwl  = ! git ww list
     wwa  = ! git ww add
     wwp  = ! git ww prune
 
-    bb   = ! git ${__visualize__} branch
+    bb   = ! git ${__sk_visualize_sk__} branch
     bbr  = ! git bb -r --column=auto
     bbv  = ! git bb -vv
 
