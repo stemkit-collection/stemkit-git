@@ -96,8 +96,13 @@
     ddwb = ! ${git:-git} launch-in \"${GIT_PREFIX}\" ddw `${git:-git} branch-rev-range \"${@}\"` "#"
 
     tt   = ! find . -maxdepth 5 -name .git -exec dirname {} "';'" | xargs -I{} sh -c "'${git:-git} -C \"{}\" top \"##\" 1>&2; ${git:-git} -C \"{}\" \"${@}\"'" --
-    uu   = ! ws=`${git:-git} ws` && ${__sk_visualize_sk__:+echo} sh \"${ws}\"/scripts/update-worktrees
     wtt  = ! ws=`${git:-git} ws` && ${__sk_visualize_sk__:+echo} ${git:-git} -C \"${ws}\" tt
+
+    update-worktrees = ! ws=`${git:-git} ws` && ${__sk_visualize_sk__:+echo} sh \"${ws}\"/scripts/update-worktrees
+    uu = ! ${git:-git} update-worktrees
+
+    restore-worktrees = ! ws=`${git:-git} ws` && ${__sk_visualize_sk__:+echo} sh \"${ws}\"/scripts/restore-worktrees
+    rr = ! ${git:-git} restore-worktrees
 
     ww   = ! ${git:-git} ${__sk_visualize_sk__} worktree
     wwl  = ! ${git:-git} ww list
