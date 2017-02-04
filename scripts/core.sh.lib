@@ -261,7 +261,8 @@ script_full_path=`full_prog_path "${0}"`
 script_folder=`dirname "${script_full_path}"`
 script_name=`basename "${script_full_path}"`
 
-FORCE=no
+unset FORCE
+
 DEBUG=no
 QUIET=no
 VERBOSE=no
