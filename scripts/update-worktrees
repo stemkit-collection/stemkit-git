@@ -88,7 +88,7 @@ push () {
 }
 
 process_option () {
-  debug "O: ${1} (${2})"
+  debug "O" "${1} (${2})"
 
   option=${1}
   argument=${2}

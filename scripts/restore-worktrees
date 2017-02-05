@@ -22,7 +22,7 @@ make_worktree () {
   top=${DIRECTORY:-'.'}/${1}/${OFFSET:-'src'}
 
   [ -e "${top}" ] && {
-    warning "Already exists: ${top}"
+    warning "Already exists" "${top}"
     return 0
   }
 
