@@ -1,6 +1,7 @@
 # vim: ft=gitconfig: sw=4:
 
 [alias]
+    gfb-aliases-available = ! true
     aa = ! ${git:-git} config --list | ruby -n -e '$_.scan(%r{^alias[.](.*?)\\s*=\\s*(.*)$}){|a,c|puts %q{%-4s -> %s}%[a,c]}'
 
     bn = ! bn=`${git:-git} rev-parse --abbrev-ref --revs-only \"${1:-HEAD}\" --` && echo ${bn:-${1}} "#"

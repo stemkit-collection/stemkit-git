@@ -2,8 +2,103 @@
 # vim: ft=sh: sw=2:
 # Author: Gennady Bystritsky (bystr@mac.com)
 
+DESCEND=yes
+LIST=no
+
+unset OFFSET
+
 main () {
   parse_command_line "${@}"
+
+  git gfb-aliases-available 2>&5 || {
+    import git && setup_git_environment
+  }
+
+  ROOT=`git ws 2>&5` || ROOT=`pwd`
+
+  [ ${#} -eq 0 -a "${LIST}" = no ] && {
+    output 1 "${ROOT}"
+    return 0
+  }
+
+  [ "${DESCEND}" = yes ] && {
+    OFFSET=`git from-top 2>&5`
+  }
+
+  process_tops `figure_tops`
+}
+
+figure_tops () {
+  git -C "${ROOT}" tt top 2>&5 | sed -n "s%^${ROOT}/%%p"
+}
+
+process_tops () {
+  [ "${LIST}" = yes ] && list_tops "${@}" && return
+
+  for target in ${targets}; do
+    guess "${target}"
+  done
+}
+
+list_tops () {
+  for item in "${@}"; do
+    enable=yes
+    for target in ${targets}; do
+      enable=no
+      case "${item}" in
+        *"${target}"* )
+          enable=yes
+          break
+        ;;
+      esac
+    done
+
+    [ "${enable}" = yes ] && output 2 "${item}" || true
+  done
+}
+
+__cdws__ () {
+  __cdws_target__="${1}"
+
+  set -- `__original_cd__ "${__cdws_ws__}" && git tt top 2>/dev/null | while read line; do
+    case "${line}" in
+      ${__cdws_ws__}/${__cdws_target__}*)
+        echo ${line}
+      ;;
+    esac
+  done`
+
+  __cdws_filter__="sed -n 's%^${__cdws_ws__}/\(.*\)$%  \1%p'"
+
+  [ "${#}" -gt 1 ] && {
+    ( echo "ERROR: Umbiguous workspace \"${__cdws_target__}\" in ${__cdws_ws__}"
+      echo "Matching workspaces:"
+      ls -1 "${@}" | eval "${__cdws_filter__}"
+    ) 1>&2
+
+    __unset_vars_like__ __cdws_
+    return 3
+  }
+
+  [ "${#}" -eq 0 ] && {
+    ( echo "ERROR: No workspace \"${__cdws_target__}\" in ${__cdws_ws__}"
+      echo "Available workspaces:"
+      git -C "${__cdws_ws__}" tt top 2>/dev/null | eval "${__cdws_filter__}"
+    ) 1>&2
+
+    __unset_vars_like__ __cdws_
+    return 3
+  }
+
+  __cdws_sibling_target__="${1}/${__cdws_from_top__}"
+
+  if [ -d "${__cdws_sibling_target__}" ]; then
+    __cd__ "${__cdws_sibling_target__}"
+  else
+    __cd__ "${1}"
+  fi
+
+  __unset_vars_like__ __cdws_
 }
 
 process_option () {
@@ -11,6 +106,14 @@ process_option () {
   argument=${2}
 
   case "${option}" in
+    --top | -t )
+      DESCEND=no
+    ;;
+
+    --list | -l )
+      LIST=yes
+    ;;
+
     *)
       process_standard_option "${@}"
     ;;
@@ -18,12 +121,13 @@ process_option () {
 }
 
 process_parameters () {
-  return ${#}
+  targets=${@}
+  return 0
 }
 
 options_usage () {
-  echo "`standard_options_usage` [ <branch-name> ]"
+  echo "`standard_options_usage` [<branch-name>]"
 }
 
 . `type "${0}" | awk '{print $(NF)}' | xargs dirname`/core.sh.lib
-start import=ws "${@}"
+start "${@}"
