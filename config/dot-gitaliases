@@ -46,7 +46,7 @@
     from-top = ! ${git:-git} labeled-rev-parse-show \"${GIT_PREFIX}\" prefix
     to-top = ! ${git:-git} labeled-rev-parse-show \"${GIT_PREFIX}\" cdup
     top = ! ${git:-git} labeled-rev-parse-show \"${GIT_PREFIX}\" toplevel
-    ws = ! t=`${git:-git} top` c=${?} sh -c "'[ \"${c}\" -eq 0 -a -f \"${t}\"/.git ] || { echo ${t:-./}; exit ${c}; } && ${git:-git} -C .. top'"
+    ws = ! t=`${git:-git} top` c=${?} sh -c "'[ \"${c}\" = 0 -a -f \"${t}\"/.git ] || { echo ${t:-./}; exit ${c}; } && ${git:-git} -C .. top'"
 
     replace-prefixes = ! p=`${git:-git} -C \"${GIT_PREFIX}\" to-top` sh -c '${git:-git} launch-in \"${GIT_PREFIX}\" \"${0}\" --src-prefix=${p} --dst-prefix=${p} \"${@}\"'
 
@@ -96,7 +96,7 @@
     ddb  = ! ${git:-git} launch-in \"${GIT_PREFIX}\" dd  `${git:-git} branch-rev-range \"${@}\"` "#"
     ddwb = ! ${git:-git} launch-in \"${GIT_PREFIX}\" ddw `${git:-git} branch-rev-range \"${@}\"` "#"
 
-    tt   = ! find . -maxdepth 5 -name .git -exec dirname {} "';'" | xargs -I{} sh -c "'${git:-git} -C \"{}\" top \"##\" 1>&2; ${git:-git} -C \"{}\" \"${@}\"'" --
+    tt   = ! find `pwd` -maxdepth 5 -name .git -exec dirname {} "';'" | xargs -I{} sh -c "'echo \"## {}\" 1>&2 && [ ${#} = 0 ] || ${git:-git} -C \"{}\" \"${@}\"'" --
     wtt  = ! ws=`${git:-git} ws` && ${__sk_visualize_sk__:+echo} ${git:-git} -C \"${ws}\" tt
 
     update-worktrees = ! ws=`${git:-git} ws` && ${__sk_visualize_sk__:+echo} sh \"${ws}\"/scripts/update-worktrees
