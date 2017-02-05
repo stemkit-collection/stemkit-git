@@ -39,8 +39,8 @@ main () {
     1)
       target=${ROOT}/${1}
 
-      [ "${OFFSET:-.}" = . ] || {
-        deep_target="${target}/${OFFSET}"
+      [ "${OFFSET:-./}" = ./ ] || {
+        deep_target=`echo "${target}/${OFFSET}" | sed 's%/$%%'`
         [ -d "${deep_target}" ] && {
           output 1 "${deep_target}"
           return 0

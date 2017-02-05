@@ -105,6 +105,10 @@
     restore-worktrees = ! ws=`${git:-git} ws` && ${__sk_visualize_sk__:+echo} sh \"${ws}\"/scripts/restore-worktrees
     rr = ! ${git:-git} restore-worktrees
 
+    guess-workspace = ! ws=`${git:-git} ws` && cd \"${GIT_PREFIX}\" >/dev/null 2>&1 && ${__sk_visualize_sk__:+echo} sh \"${ws}\"/scripts/guess-workspace
+    gws = ! ${git:-git} launch-in \"${GIT_PREFIX}\" guess-workspace
+    gwl = ! ${git:-git} launch-in \"${GIT_PREFIX}\" guess-workspace --list
+
     ww   = ! ${git:-git} ${__sk_visualize_sk__} worktree
     wwl  = ! ${git:-git} ww list
     wwa  = ! ${git:-git} ww add
