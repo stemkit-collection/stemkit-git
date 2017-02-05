@@ -7,7 +7,7 @@
 #       start import=git[,<library>]... "${@}"
 
 report_git_sh_lib_found () {
-  debug "git.sh.lib: ${script_full_path}: ${@}"
+  debug "git.sh.lib" "${script_full_path}" "${*}"
 }
 
 git () {
@@ -76,6 +76,6 @@ ensure_git_aliases () {
     return
   }
 
-  error "Missing git aliases: ${aliases:-'???'}"
+  error "Missing git aliases" "${aliases:-'???'}"
   exit 3
 }

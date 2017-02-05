@@ -7,12 +7,12 @@
 #       start import=ws[,<library>]... "${@}"
 
 report_ws_sh_lib_found () {
-  debug "ws.sh.lib: ${script_full_path}: ${@}"
+  debug "ws.sh.lib" "${script_full_path}" "${*}"
 }
 
 ensure_git_workspace () {
   root=`git ws` && cd "${root}" || {
-    error "Not a git workspace: `pwd`"
+    error "Not a git workspace" "`pwd`"
     exit 2
   }
 }
