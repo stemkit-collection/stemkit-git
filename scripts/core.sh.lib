@@ -120,7 +120,6 @@ parse_command_line () {
         error 'Internal problem'
         exit 5
       ;;
-
     esac
   done
 
