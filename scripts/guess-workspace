@@ -5,7 +5,7 @@
 DESCEND=yes
 LIST=no
 
-unset OFFSET
+unset OFFSET SAFE
 
 main () {
   parse_command_line "${@}"
@@ -16,91 +16,88 @@ main () {
 
   ROOT=`git ws 2>&5` || ROOT=`pwd`
 
-  [ "${DESCEND}" = yes ] && {
-    OFFSET=`git from-top 2>&5`
-  }
-
-  [ "${LIST}" = yes ] && action=list || action=process
-
-  [ "${target_number}" = 0 ] && "${action}_item" || {
-    figure_tops | while read item; do
-      "${action}_item" "${item}"
-    done
-  }
-}
-
-figure_tops () {
-  git -C "${ROOT}" tt top 2>&5 | sed -n "s%^${ROOT}/%%p"
-}
-
-process_item () {
-  [ ${#} = 0 ] && {
+  [ "${matchers:-no}" = no -a "${LIST}" = no ] && {
     echo "${ROOT}"
     return 0
   }
 
-  guess "${1}"
+  [ "${DESCEND}" = yes ] && {
+    OFFSET=`git from-top 2>&5`
+  }
+
+  available=`collect_available`
+  matching=`output_filtered yes 1 '' ${available}`
+
+  [ "${LIST}" = yes ] && {
+    output_filtered no 1 '' ${matching}
+    return 0
+  }
+
+  set -- ${matching}
+
+  case ${#} in
+    1)
+      target=${ROOT}/${1}
+
+      [ "${OFFSET:-.}" = . ] || {
+        deep_target="${target}/${OFFSET}"
+        [ -d "${deep_target}" ] && {
+          output 1 "${deep_target}"
+          return 0
+        }
+      }
+
+      output 1 "${target}"
+      return 0
+    ;;
+
+    0)
+      error 'No workspaces for specification' ${matchers}
+      output 2 'Available workspaces:'
+      output_filtered no 2 '  ' ${available}
+    ;;
+
+    *)
+      error 'Ambiguous workspace specification' ${matchers}
+      output 2 'Matching workspaces:'
+      output_filtered no 2 '  ' ${matching}
+    ;;
+  esac
+
+  [ "${SAFE}" = yes ] && output 1 .
 }
 
-list_item () {
-  [ ${#} = 0 ] && return 1
+output_filtered () {
+  filter=${1}
+  stream=${2}
+  indent=${3}
 
-  out=yes
-  for target in ${target_list}; do
-    out=no
-    case "${item}" in
-      *"${target}"* )
-        out=yes
-        break
+  shift 3
+
+  for item in "${@}"; do
+    [ "${filter}" = no ] || check_match "${item}" && {
+      output "${stream}" "${indent}${item}"
+    }
+  done
+}
+
+collect_available () {
+  git -C "${ROOT}" tt top 2>&5 | sed -n "s%^${ROOT}/%%p"
+}
+
+
+check_match () {
+  for matcher in ${matchers}; do
+    case "${1}" in
+      *"${matcher}"* )
+        continue
       ;;
     esac
+
+    return 1
   done
 
-  [ "${out}" = yes ] && output 2 "${item}" || true
-}
-
-__cdws__ () {
-  __cdws_target__="${1}"
-
-  set -- `__original_cd__ "${__cdws_ws__}" && git tt top 2>/dev/null | while read line; do
-    case "${line}" in
-      ${__cdws_ws__}/${__cdws_target__}*)
-        echo ${line}
-      ;;
-    esac
-  done`
-
-  __cdws_filter__="sed -n 's%^${__cdws_ws__}/\(.*\)$%  \1%p'"
-
-  [ "${#}" -gt 1 ] && {
-    ( echo "ERROR: Umbiguous workspace \"${__cdws_target__}\" in ${__cdws_ws__}"
-      echo "Matching workspaces:"
-      ls -1 "${@}" | eval "${__cdws_filter__}"
-    ) 1>&2
-
-    __unset_vars_like__ __cdws_
-    return 3
-  }
-
-  [ "${#}" -eq 0 ] && {
-    ( echo "ERROR: No workspace \"${__cdws_target__}\" in ${__cdws_ws__}"
-      echo "Available workspaces:"
-      git -C "${__cdws_ws__}" tt top 2>/dev/null | eval "${__cdws_filter__}"
-    ) 1>&2
-
-    __unset_vars_like__ __cdws_
-    return 3
-  }
-
-  __cdws_sibling_target__="${1}/${__cdws_from_top__}"
-
-  if [ -d "${__cdws_sibling_target__}" ]; then
-    __cd__ "${__cdws_sibling_target__}"
-  else
-    __cd__ "${1}"
-  fi
-
-  __unset_vars_like__ __cdws_
+  return 0
 }
 
 process_option () {
@@ -116,6 +113,10 @@ process_option () {
       LIST=yes
     ;;
 
+    --safe | -s )
+      SAFE=yes
+    ;;
+
     *)
       process_standard_option "${@}"
     ;;
@@ -123,13 +124,11 @@ process_option () {
 }
 
 process_parameters () {
-  target_number="${#}"
-  target_list="${@}"
-  return 0
+  matchers="${@}"
 }
 
 options_usage () {
-  echo "`standard_options_usage` [<branch-name>]"
+  echo "`standard_options_usage` [--top|-t][--list|-l][--safe|-s][<matcher>...]"
 }
 
 . `type "${0}" | awk '{print $(NF)}' | xargs dirname`/core.sh.lib
