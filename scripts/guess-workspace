@@ -16,45 +16,47 @@ main () {
 
   ROOT=`git ws 2>&5` || ROOT=`pwd`
 
-  [ ${#} -eq 0 -a "${LIST}" = no ] && {
-    output 1 "${ROOT}"
-    return 0
-  }
-
   [ "${DESCEND}" = yes ] && {
     OFFSET=`git from-top 2>&5`
   }
 
-  process_tops `figure_tops`
+  [ "${LIST}" = yes ] && action=list || action=process
+
+  [ "${target_number}" = 0 ] && "${action}_item" || {
+    figure_tops | while read item; do
+      "${action}_item" "${item}"
+    done
+  }
 }
 
 figure_tops () {
   git -C "${ROOT}" tt top 2>&5 | sed -n "s%^${ROOT}/%%p"
 }
 
-process_tops () {
-  [ "${LIST}" = yes ] && list_tops "${@}" && return
+process_item () {
+  [ ${#} = 0 ] && {
+    echo "${ROOT}"
+    return 0
+  }
 
-  for target in ${targets}; do
-    guess "${target}"
-  done
+  guess "${1}"
 }
 
-list_tops () {
-  for item in "${@}"; do
-    enable=yes
-    for target in ${targets}; do
-      enable=no
-      case "${item}" in
-        *"${target}"* )
-          enable=yes
-          break
-        ;;
-      esac
-    done
+list_item () {
+  [ ${#} = 0 ] && return 1
 
-    [ "${enable}" = yes ] && output 2 "${item}" || true
+  out=yes
+  for target in ${target_list}; do
+    out=no
+    case "${item}" in
+      *"${target}"* )
+        out=yes
+        break
+      ;;
+    esac
   done
+
+  [ "${out}" = yes ] && output 2 "${item}" || true
 }
 
 __cdws__ () {
@@ -121,7 +123,8 @@ process_option () {
 }
 
 process_parameters () {
-  targets=${@}
+  target_number="${#}"
+  target_list="${@}"
   return 0
 }
 
