@@ -53,13 +53,13 @@ main () {
 
     0)
       error 'No workspaces for matchers' ${matchers}
-      output 2 'Available workspaces:'
+      info 'Available workspaces:'
       output_filtered no 2 '  ' ${available}
     ;;
 
     *)
       error 'Ambiguous workspaces for matchers' ${matchers}
-      output 2 'Matching workspaces:'
+      info 'Matching workspaces:'
       output_filtered no 2 '  ' ${matching}
     ;;
   esac
