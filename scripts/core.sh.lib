@@ -195,7 +195,7 @@ log () {
   label=${1}
   shift
 
-  output 2 "##" `make_log_message "${script_name}" "${label}" "${@}"`
+  output 2 `make_log_message "${label}" "${script_name}" "${@}"`
 }
 
 make_log_message () {
