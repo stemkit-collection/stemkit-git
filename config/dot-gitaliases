@@ -96,7 +96,7 @@
     ddb  = ! ${git:-git} launch-in \"${GIT_PREFIX}\" dd  `${git:-git} branch-rev-range \"${@}\"` "#"
     ddwb = ! ${git:-git} launch-in \"${GIT_PREFIX}\" ddw `${git:-git} branch-rev-range \"${@}\"` "#"
 
-    tt   = ! find -L `pwd` -maxdepth 5 -name .git -exec dirname {} "';'" | xargs -I{} sh -c "'echo \"## {}\" 1>&2 && [ ${#} = 0 ] || ${git:-git} -C \"{}\" \"${@}\"'" --
+    tt   = ! find -L `pwd` -maxdepth 6 -name .git -exec dirname {} "';'" | xargs -I{} sh -c "'echo \"## {}\" 1>&2 && [ ${#} = 0 ] || ${git:-git} -C \"{}\" \"${@}\"'" --
     wtt  = ! ws=`${git:-git} ws` && ${__sk_visualize_sk__:+echo} ${git:-git} -C \"${ws}\" tt
 
     update-worktrees = ! ws=`${git:-git} ws` && ${__sk_visualize_sk__:+echo} sh \"${ws}\"/scripts/update-worktrees
