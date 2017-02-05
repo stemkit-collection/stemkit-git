@@ -13,8 +13,14 @@ main () {
 
   run git worktree prune
 
-  git branch | grep -v '^[*]' | while read line; do
-    make_worktree ${line} || break
+  process_branches `git branch | grep -v '^[*]'`
+}
+
+process_branches () {
+  for branch in "${@}"; do
+    make_worktree ${branch} || {
+      warning 'Problems detected, check prior messages.'
+    }
   done
 }
 
@@ -22,7 +28,7 @@ make_worktree () {
   top=${DIRECTORY:-'.'}/${1}/${OFFSET:-'src'}
 
   [ -e "${top}" ] && {
-    warning "Already exists" "${top}"
+    info "Already exists" "${top}"
     return 0
   }
 
