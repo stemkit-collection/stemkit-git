@@ -86,7 +86,7 @@ process_standard_option () {
     ;;
 
     -? | --* )
-      usage_and_exit 3 "Unsupported option: ${option}"
+      usage_and_exit 3 'Unsupported option' "${option}"
     ;;
 
     -* )
@@ -123,7 +123,7 @@ parse_command_line () {
     esac
   done
 
-  process_parameters "${@}" || usage_and_exit 2 "Superfluous parameters: ${*}"
+  process_parameters "${@}" || usage_and_exit 2 'Superfluous parameters' "${*}"
 }
 
 report_simulation_mode () {
@@ -150,10 +150,13 @@ disable_simulation_mode () {
 }
 
 usage_and_exit () {
-  [ "${2:+set}" = set ] && error "${2}"
+  status=${1}
+  shift
+
+  [ ${#} != 0 ] && error "${@}"
 
   usage "`options_usage`"
-  exit "${1}"
+  exit "${status}"
 }
 
 run () {
@@ -192,7 +195,13 @@ log () {
   label=${1}
   shift
 
-  output 2 "## ${script_name}: ${label}: ${@}"
+  output 2 "##" `make_log_message "${script_name}" "${label}" "${@}"`
+}
+
+make_log_message () {
+  while [ ${#} != 0 ]; do
+    [ ${#} = 1 ] && echo "${1}" || echo "${1}:" && shift
+  done
 }
 
 usage () {
@@ -235,7 +244,7 @@ import () {
     item="${script_folder}/${item}.sh.lib"
 
     [ -f "${item}" ] || {
-      error "No library: ${item}"
+      error 'No library' "${item}"
       exit 5
     }
 
