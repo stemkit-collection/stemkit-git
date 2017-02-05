@@ -82,9 +82,8 @@ output_filtered () {
 }
 
 collect_available () {
-  git -C "${ROOT}" tt top 2>&5 | sed -n "s%^${ROOT}/%%p"
+  git -C "${ROOT}" tt 2>&1 | sed -n "s%^[# ]*${ROOT}/%%p"
 }
-
 
 check_match () {
   for matcher in ${matchers}; do

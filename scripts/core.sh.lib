@@ -161,7 +161,7 @@ usage_and_exit () {
 
 run () {
   marker="${FORCE:+==}"
-  output 2 "${marker:-##} ${@}"
+  output 6 "${marker:-##} ${@}"
 
   [ "${FORCE}" = yes ] || return 0
   "${@}"
@@ -273,7 +273,7 @@ start () {
   main "${@}"
 }
 
-exec 5>/dev/null
+exec 5>/dev/null 6>&2
 
 script_full_path=`full_prog_path "${0}"`
 script_folder=`dirname "${script_full_path}"`

@@ -15,7 +15,7 @@ git () {
 }
 
 __git__() {
-  [ "${DEBUG}" = yes ] && output 2 == "${@}"
+  [ "${DEBUG}" = yes ] && output 6 == "${@}"
   "${@}"
 }
 
