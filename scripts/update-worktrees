@@ -5,6 +5,7 @@
 REMOTE=no
 MERGE=yes
 PUSH=no
+EXPLICIT_PUSH=no
 
 main () {
   parse_command_line "${@}"
@@ -41,8 +42,13 @@ sync_branch () {
   [ "${PUSH}" = yes ] && {
     ensure_no_local_changes || {
       number=${?}
-      "${pwd}"
 
+      is_simulation_mode && [ "${EXPLICIT_PUSH}" = no ] && {
+        warning 'Specify option --push (-p) for push action at normal run'
+        EXPLICIT_PUSH=yes # just to print the above message once
+      }
+
+      "${pwd}"
       indent_output_from push "${number}" "${@}"
       pwd="true"
     }
@@ -100,6 +106,7 @@ process_option () {
     ;;
 
     --push | -p )
+      EXPLICIT_PUSH=yes
       PUSH=yes
       MERGE=no
     ;;
