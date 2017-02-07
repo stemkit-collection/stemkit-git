@@ -118,7 +118,7 @@
     bbr  = ! ${git:-git} bb -r --column=auto
     bbv  = ! ${git:-git} bb -vv
 
-    bbs  = ! ${git:-git} branch -vv --color \"${@}\" | ruby -n -e '$_.scan(%r{^([*]?\\s*\\S+.*?)\\S+\\s+\\[(.*?) *: *(.*?)\\]}){|b,r,s|puts %q{%s %-12s %s}%[b,s,r]}' "#"
+    bbs  = ! ${git:-git} branch -vv --color \"${@}\" | ruby -n -e '$_.scan(%r{^([*]?\\s*\\S+.*?)\\S+\\s+\\[([^\\]:]*?) *: *([^\\]:]*?)\\]}){|b,r,s|puts %q{%s %-12s %s}%[b,s,r]}' "#"
     bbsl = ! ${git:-git} bbs --no-color | ruby -ne "'puts $_.scan /^[*\\s]*(\\S+)/'" "#"
     bbc  = ! ${git:-git} branch -vv --color | grep '^[*] '
 
