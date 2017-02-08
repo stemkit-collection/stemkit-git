@@ -25,20 +25,46 @@ main () {
   }
 
   git tt top 2>&5 | while read top; do
-    cd "${top}" && {
-      sync_branch `local_with_remote_if_current_and_differ`
-    }
+    cd "${top}" && sync_branch
   done
 }
 
 local_with_remote_if_current_and_differ () {
-  git bbs | awk '$1 == "*" {print $(2), $(NF)}'
+  git bbs "${@}" | awk '$1 == "*" {print $(2), $(3), $(NF)}'
 }
 
 sync_branch () {
-  [ ${#} -eq 2 ] || return
+  set -- `local_with_remote_if_current_and_differ --no-color`
+  [ ${#} -ne 3 ] && return
+
+  reason=${2}
+  local_no_color=${1}
+  remote_no_color=${3}
+
+  set -- `local_with_remote_if_current_and_differ --color`
+  [ ${#} -ne 3 ] && return
+
+  local_color=${1}
+  remote_color=${3}
 
   pwd="pwd"
+
+  upstream=`git rev-parse --abbrev-ref @{u} 2>&5` || {
+    reason=`echo "${reason}" | tr '[a-z]' '[A-Z]'`
+
+    "${pwd}"
+    indent_output_from warning 'Not a valid upstream' "${local_no_color}" "${reason}" "${remote_no_color}"
+    pwd="true"
+
+    return
+  }
+
+  [ "${upstream}" != "${remote_no_color}" ] && {
+    "${pwd}"
+    indent_output_from warning 'Ustream mismatch' "${local_no_color}" "${upstream}" "${remote_no_color}"
+    pwd="true"
+  }
+
   [ "${PUSH}" = yes ] && {
     ensure_no_local_changes || {
       number=${?}
@@ -49,7 +75,7 @@ sync_branch () {
       }
 
       "${pwd}"
-      indent_output_from push "${number}" "${@}"
+      indent_output_from push "${number}" "${local_color}" "${remote_color}"
       pwd="true"
     }
   }
@@ -59,7 +85,7 @@ sync_branch () {
       number=${?}
       "${pwd}"
 
-      indent_output_from merge_if_clean "${number}" "${@}"
+      indent_output_from merge_if_clean "${number}" "${local_color}" "${remote_color}"
       pwd="true"
     }
   }

@@ -168,7 +168,7 @@ run () {
 }
 
 indent_output_from () {
-  "${@}" 2>&1 | sed 's/^/    /'
+  "${@}" 2>&1 6>&1 | sed 's/^/    /'
 }
 
 info () {
