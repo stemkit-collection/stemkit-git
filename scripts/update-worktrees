@@ -53,7 +53,7 @@ sync_branch () {
     reason=`echo "${reason}" | tr '[a-z]' '[A-Z]'`
 
     "${pwd}"
-    indent_output_from warning 'Not a valid upstream' "${local_no_color}" "${reason}" "${remote_no_color}"
+    indent_output_from warning 'Not a valid upstream' "${local_no_color}" "${reason}" "${remote_color}"
     pwd="true"
 
     return
@@ -61,7 +61,7 @@ sync_branch () {
 
   [ "${upstream}" != "${remote_no_color}" ] && {
     "${pwd}"
-    indent_output_from warning 'Ustream mismatch' "${local_no_color}" "${upstream}" "${remote_no_color}"
+    indent_output_from warning 'Ustream mismatch' "${local_no_color}" "${upstream}" "${remote_color}"
     pwd="true"
   }
 
