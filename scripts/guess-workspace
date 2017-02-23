@@ -14,7 +14,9 @@ main () {
     import git && setup_git_environment
   }
 
-  ROOT=`git ws 2>&5` || ROOT=`pwd`
+  ROOT=`git ws 2>&5` || ROOT=`git -C "${script_folder}" ws` || {
+    return 2
+  }
 
   [ "${matchers:-no}" = no -a "${LIST}" = no ] && {
     echo "${ROOT}"
