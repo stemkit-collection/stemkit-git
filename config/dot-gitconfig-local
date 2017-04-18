@@ -1,0 +1,9 @@
+# vim: ft=gitconfig: sw=4:
+# A template for ${HOME}/.gitconfig, adjust accordingly.
+#
+[include]
+    path = projects/workspace/config/dot-gitconfig
+
+[user]
+    name = Doe, John
+    email = john.doe@acme.com
