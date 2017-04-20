@@ -55,7 +55,7 @@
     ln   = ! ${git:-git} launch-in \"${GIT_PREFIX}\" log-with-header \"%+s\" --name-status
     lr   = ! ${git:-git} launch-in \"${GIT_PREFIX}\" ln --relative
     lv   = ! ${git:-git} launch-in \"${GIT_PREFIX}\" log-with-header \"%+s%+b\" --name-status
-    ll   = ! ${git:-git} launch-in \"${GIT_PREFIX}\" log-date-as \"%C(auto)%h %cd `${git:-git} log-name-wrap [%cN]`%d %s\"
+    ll   = ! ${git:-git} launch-in \"${GIT_PREFIX}\" log-date-as \"%C(auto)%h %cd `${git:-git} log-name-wrap %<(19,trunc)%cN`%d %s\"
 
     lp   = ! ${git:-git} launch-in \"${GIT_PREFIX}\" replace-prefixes ls -p
     lpw  = ! ${git:-git} launch-in \"${GIT_PREFIX}\" lp --color-words
