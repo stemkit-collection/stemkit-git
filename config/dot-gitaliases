@@ -39,7 +39,7 @@
 
     log-name-wrap = ! echo \"%C(yellow dim)${1}%C(reset)%C(auto)\" "#"
     log-date-as = ! sh -c '${git:-git} launch-in \"${GIT_PREFIX}\" ${__sk_visualize_sk__} log --date=\"format:%F %T\" --pretty=format:\"${0}\" \"${@}\"'
-    log-with-header = ! sh -c '${git:-git} launch-in \"${GIT_PREFIX}\" log-date-as \"%C(auto)`printf %78s|sed s/./-/g`%+D%+h (%p) | `${git:-git} log-name-wrap %cn` | %cd (%cr) ${0}\" \"${@}\"'
+    log-with-header = ! sh -c '${git:-git} launch-in \"${GIT_PREFIX}\" log-date-as \"%C(auto)`printf %78s|sed s/./-/g`%+D%+h (%p) | `${git:-git} log-name-wrap %cN` | %cd (%cr) ${0}\" \"${@}\"'
 
     labeled-rev-parse-show = ! s=`${git:-git} launch-in \"${1}\" rev-parse --show-${2}` c=${?} sh -c "'echo ${3} ${s:-./}; exit ${c}'" --
 
