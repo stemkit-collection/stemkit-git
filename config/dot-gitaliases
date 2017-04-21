@@ -124,6 +124,9 @@
     bbsl = ! ${git:-git} bbs --no-color | ruby -ne "'puts $_.scan /^[*\\s]*(\\S+)/'" "#"
     bbc  = ! ${git:-git} branch -vv --color | grep '^[*] '
 
+    branch-remote-owner = ! git branch -r --list ${1:+${1}/*} | xargs -I\"{}\" git log-date-as \"%h %cd `git log-name-trunc %cN` {}\" \"{}\" --color -1 "#"
+    bro = ! ${git:-git} branch-remote-owner
+
     svn-pull  = ! ${git:-git} svn rebase
     svn-push  = ! ${git:-git} svn dcommit
     svn-clone = ! ${git:-git} svn clone
