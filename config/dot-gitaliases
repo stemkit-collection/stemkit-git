@@ -37,9 +37,11 @@
     visualize = ! ruby -e \"puts ARGV.map{|s|s.gsub(/.*\\s.*/,&:inspect).gsub(/%C[(].+?[)]/,'')}.join(' ')\" -- git
     what = ! __sk_visualize_sk__=visualize ${git:-git} launch-in \"${GIT_PREFIX}\"
 
-    log-name-wrap = ! echo \"%C(yellow dim)${1}%C(reset)%C(auto)\" "#"
-    log-date-as = ! sh -c '${git:-git} launch-in \"${GIT_PREFIX}\" ${__sk_visualize_sk__} log --date=\"format:%F %T\" --pretty=format:\"${0}\" \"${@}\"'
-    log-with-header = ! sh -c '${git:-git} launch-in \"${GIT_PREFIX}\" log-date-as \"%C(auto)`printf %78s|sed s/./-/g`%+D%+h (%p) | `${git:-git} log-name-wrap %cn` | %cd (%cr) ${0}\" \"${@}\"'
+    log-name = ! echo \"%C(yellow dim)${1}%C(reset)%C(auto)\" "#"
+    log-name-trunc = ! ${git:-git} log-name \"%<(19,trunc)${1}\" "#"
+
+    log-date-as = ! sh -c '${git:-git} launch-in \"${GIT_PREFIX}\" ${__sk_visualize_sk__} log --date=\"format:%F %T\" --pretty=tformat:\"%C(auto)${0}\" \"${@}\"'
+    log-with-header = ! sh -c '${git:-git} launch-in \"${GIT_PREFIX}\" log-date-as \"`printf %78s|sed s/./-/g`%+D%+h (%p) | `${git:-git} log-name %cN` | %cd (%cr) ${0}\" \"${@}\"'
 
     labeled-rev-parse-show = ! s=`${git:-git} launch-in \"${1}\" rev-parse --show-${2}` c=${?} sh -c "'echo ${3} ${s:-./}; exit ${c}'" --
 
@@ -55,7 +57,7 @@
     ln   = ! ${git:-git} launch-in \"${GIT_PREFIX}\" log-with-header \"%+s\" --name-status
     lr   = ! ${git:-git} launch-in \"${GIT_PREFIX}\" ln --relative
     lv   = ! ${git:-git} launch-in \"${GIT_PREFIX}\" log-with-header \"%+s%+b\" --name-status
-    ll   = ! ${git:-git} launch-in \"${GIT_PREFIX}\" log-date-as \"%C(auto)%h %cd `${git:-git} log-name-wrap [%cN]`%d %s\"
+    ll   = ! ${git:-git} launch-in \"${GIT_PREFIX}\" log-date-as \"%h %cd `${git:-git} log-name-trunc %cN`%d %s\"
 
     lp   = ! ${git:-git} launch-in \"${GIT_PREFIX}\" replace-prefixes ls -p
     lpw  = ! ${git:-git} launch-in \"${GIT_PREFIX}\" lp --color-words
@@ -121,6 +123,9 @@
     bbs  = ! ${git:-git} branch -vv --color \"${@}\" | ruby -n -e '$_.scan(%r{^([*]?\\s*\\S+.*?)\\S+\\s+\\[([^\\]:]*?) *: *([^\\]:]*?)\\]}){|b,r,s|puts %q{%s %-12s %s}%[b,s,r]}' "#"
     bbsl = ! ${git:-git} bbs --no-color | ruby -ne "'puts $_.scan /^[*\\s]*(\\S+)/'" "#"
     bbc  = ! ${git:-git} branch -vv --color | grep '^[*] '
+
+    branch-remote-owner = ! git branch -r --list ${1:+${1}/*} | xargs -I\"{}\" git log-date-as \"%h %cd `git log-name-trunc %cN` {}\" \"{}\" --color -1 "#"
+    bro = ! ${git:-git} branch-remote-owner
 
     svn-pull  = ! ${git:-git} svn rebase
     svn-push  = ! ${git:-git} svn dcommit
