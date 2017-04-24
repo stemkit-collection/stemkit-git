@@ -40,7 +40,7 @@
     log-name = ! echo \"%C(yellow dim)${1}%C(reset)%C(auto)\" "#"
     log-name-trunc = ! ${git:-git} log-name \"%<(19,trunc)${1}\" "#"
 
-    log-date-as = ! sh -c '${git:-git} launch-in \"${GIT_PREFIX}\" ${__sk_visualize_sk__} log --date=\"format:%F %T\" --pretty=tformat:\"%C(auto)${0}\" \"${@}\"'
+    log-date-as = ! sh -c '${git:-git} launch-in \"${GIT_PREFIX}\" ${__sk_visualize_sk__} log --date=\"format:%F %T\" --pretty=tformat:\"%C(auto)${0}\" \"${@}\" --'
     log-with-header = ! sh -c '${git:-git} launch-in \"${GIT_PREFIX}\" log-date-as \"`printf %78s|sed s/./-/g`%+D%+h (%p) | `${git:-git} log-name %cN` | %cd (%cr) ${0}\" \"${@}\"'
 
     labeled-rev-parse-show = ! s=`${git:-git} launch-in \"${1}\" rev-parse --show-${2}` c=${?} sh -c "'echo ${3} ${s:-./}; exit ${c}'" --
@@ -85,7 +85,7 @@
     lg   = ! ${git:-git} launch-in \"${GIT_PREFIX}\" ${__sk_visualize_sk__} log --graph --oneline --decorate --all
     llg  = ! ${git:-git} launch-in \"${GIT_PREFIX}\" ll --graph
 
-    dd   = ! ${git:-git} launch-in \"${GIT_PREFIX}\" replace-prefixes ${__sk_visualize_sk__} diff
+    dd   = ! sh -c '${git:-git} launch-in \"${GIT_PREFIX}\" replace-prefixes ${__sk_visualize_sk__} diff \"${@}\" --' --
     ds   = ! ${git:-git} launch-in \"${GIT_PREFIX}\" dd --staged
     dn   = ! ${git:-git} launch-in \"${GIT_PREFIX}\" ${__sk_visualize_sk__} diff --name-status
     dr   = ! ${git:-git} launch-in \"${GIT_PREFIX}\" dn --relative
