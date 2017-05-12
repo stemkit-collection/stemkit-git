@@ -67,7 +67,7 @@ sync_branch () {
 
   [ "${PUSH}" = yes ] && {
     ensure_no_local_changes || {
-      number=${?}
+      number=`make_number_label "${?}"`
 
       is_simulation_mode && [ "${EXPLICIT_PUSH}" = no ] && {
         warning 'Specify option --push (-p) for push action at normal run'
@@ -82,7 +82,7 @@ sync_branch () {
 
   [ "${MERGE}" = yes ] && {
     ensure_no_remote_changes || {
-      number=${?}
+      number=`make_number_label "${?}"`
       "${pwd}"
 
       indent_output_from merge_if_clean "${number}" "${local_color}" "${remote_color}"
@@ -91,12 +91,26 @@ sync_branch () {
   }
 }
 
+make_number_label () {
+  label="${1}"
+
+  [ "${label}" -gt 99 ] && {
+    label="99+"
+  }
+
+  echo "${label}"
+}
+
 ensure_no_remote_changes () {
-  return `git log --oneline ..@{u} | head -100 | wc -l`
+  return `number_of_revisions ..@{u}`
 }
 
 ensure_no_local_changes () {
-  return `git log --oneline @{u}.. | head -100 | wc -l`
+  return `number_of_revisions @{u}..`
+}
+
+number_of_revisions () {
+  git log --oneline "${@}" | head -100 | wc -l
 }
 
 ensure_clean_workspace () {
