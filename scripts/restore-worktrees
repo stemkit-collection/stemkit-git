@@ -13,7 +13,7 @@ main () {
 
   run git worktree prune
 
-  process_branches `git branch | grep -v '^[*]'`
+  process_branches `git branch --no-color | grep -v '^[*]'`
 }
 
 process_branches () {
