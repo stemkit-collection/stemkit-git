@@ -91,7 +91,7 @@ collect_available () {
 check_match () {
   for matcher in ${matchers}; do
     case "${1}" in
-      *"${matcher}"* )
+      *`echo "${matcher}" | sed 's#[/.]\{1,\}#/#g'`* )
         continue
       ;;
     esac
