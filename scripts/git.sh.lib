@@ -10,20 +10,22 @@ report_git_sh_lib_found () {
   debug "git.sh.lib" "${script_full_path}" "${*}"
 }
 
-git () {
-  __git__ ${__git_exec__} "${SK_GIT_REAL:?}" -c include.path="${SK_GIT_ALIASES:?}" "${@}"
+setup_git_environment () {
+  git gfb-aliases-available 2>&5 || {
+    git () {
+      __trace__ ${__git_exec__} "${SK_GIT_REAL:?}" -c include.path="${SK_GIT_ALIASES:?}" "${@}"
+    }
+
+    unset __git_ws_root__
+
+    ensure_git_real
+    ensure_git_aliases
+  }
 }
 
-__git__() {
+__trace__() {
   [ "${DEBUG}" = yes ] && output 6 == "${@}"
   "${@}"
-}
-
-setup_git_environment () {
-  unset __git_ws_root__
-
-  ensure_git_real
-  ensure_git_aliases
 }
 
 from_ws_root () {
@@ -65,6 +67,10 @@ ensure_git_real () {
 
   error 'No real git in PATH'
   exit 2
+}
+
+branch_as_path () {
+    echo "${1}" | sed 's#[/.]\{1,\}#/#g'
 }
 
 ensure_git_aliases () {
