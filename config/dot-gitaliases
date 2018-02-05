@@ -4,6 +4,9 @@
     gfb-aliases-available = ! true
     aa = ! ${git:-git} config --list | ruby -n -e '$_.scan(%r{^alias[.](.*?)\\s*=\\s*(.*)$}){|a,c|puts %q{%-4s -> %s}%[a,c]}'
 
+    master-workspace = ! ${git:-git} config --show-origin --get-all include.path | sed -n 's/^file:\\(.*\\)\\/config\\/dot-gitconfig[[:space:]].*$/\\1/p' | head -1
+    mws = ! ${git:-git} master-workspace
+
     bn = ! bn=`${git:-git} rev-parse --abbrev-ref --revs-only \"${1:-HEAD}\" --` && echo ${bn:-${1}} "#"
     branch-name = ! ${git:-git} bn
 
