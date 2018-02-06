@@ -4,9 +4,6 @@
     gfb-aliases-available = ! true
     aa = ! ${git:-git} config --list | ruby -n -e '$_.scan(%r{^alias[.](.*?)\\s*=\\s*(.*)$}){|a,c|puts %q{%-4s -> %s}%[a,c]}'
 
-    master-workspace = ! ${git:-git} config --show-origin --get-all include.path | sed -n 's/^file:\\(.*\\)\\/config\\/dot-gitconfig[[:space:]].*$/\\1/p' | head -1
-    mws = ! ${git:-git} master-workspace
-
     bn = ! bn=`${git:-git} rev-parse --abbrev-ref --revs-only \"${1:-HEAD}\" --` && echo ${bn:-${1}} "#"
     branch-name = ! ${git:-git} bn
 
@@ -53,7 +50,12 @@
     from-top = ! ${git:-git} labeled-rev-parse-show \"${GIT_PREFIX}\" prefix
     to-top = ! ${git:-git} labeled-rev-parse-show \"${GIT_PREFIX}\" cdup
     top = ! ${git:-git} labeled-rev-parse-show \"${GIT_PREFIX}\" toplevel
-    ws = ! t=`${git:-git} top` c=${?} sh -c "'[ \"${c}\" = 0 -a -f \"${t}\"/.git ] || { echo ${t:-./}; exit ${c}; } && ${git:-git} -C .. top'"
+
+    workspace = ! t=`${git:-git} top` c=${?} sh -c "'[ \"${c}\" = 0 -a -f \"${t}\"/.git ] || { echo ${t:-./}; exit ${c}; } && ${git:-git} -C .. top'"
+    ws = ! git workspace
+
+    master-workspace = ! ${git:-git} config --show-origin --get-all include.path | sed -n 's/^file:\\(.*\\)\\/config\\/dot-gitloader[[:space:]].*$/\\1/p' | tail -1
+    mws = ! ${git:-git} master-workspace
 
     replace-prefixes = ! p=`${git:-git} -C \"${GIT_PREFIX}\" to-top` sh -c '${git:-git} launch-in \"${GIT_PREFIX}\" \"${0}\" --src-prefix=${p} --dst-prefix=${p} \"${@}\"'
 
@@ -104,15 +106,17 @@
     ddwb = ! ${git:-git} launch-in \"${GIT_PREFIX}\" ddw `${git:-git} branch-rev-range \"${@}\"` "#"
 
     tt   = ! find -L `pwd` -maxdepth 6 -name .git -exec dirname {} "';'" | xargs -I{} sh -c "'echo \"## {}\" 1>&2 && [ ${#} = 0 ] || ${git:-git} -C \"{}\" \"${@}\"'" --
-    wtt  = ! ws=`${git:-git} ws` && ${__sk_visualize_sk__:+echo} ${git:-git} -C \"${ws}\" tt
+    wtt  = ! ws=`${git:-git} workspace` && ${__sk_visualize_sk__:+echo} ${git:-git} -C \"${ws}\" tt
 
-    update-worktrees = ! ws=`${git:-git} ws` && ${__sk_visualize_sk__:+echo} sh \"${ws}\"/scripts/update-worktrees
+    scripts-workspace = ! ws=`${git:-git} master-workspace` && echo ${ws:-`${git:-git} workspace`}
+
+    update-worktrees = ! ws=`${git:-git} scripts-workspace` && ${__sk_visualize_sk__:+echo} sh \"${ws}\"/scripts/update-worktrees
     uu = ! ${git:-git} update-worktrees
 
-    restore-worktrees = ! ws=`${git:-git} ws` && ${__sk_visualize_sk__:+echo} sh \"${ws}\"/scripts/restore-worktrees
+    restore-worktrees = ! ws=`${git:-git} scripts-workspace` && ${__sk_visualize_sk__:+echo} sh \"${ws}\"/scripts/restore-worktrees
     rr = ! ${git:-git} restore-worktrees
 
-    guess-workspace = ! ws=`${git:-git} ws` && cd \"${GIT_PREFIX}\" >/dev/null 2>&1 && ${__sk_visualize_sk__:+echo} sh \"${ws}\"/scripts/guess-workspace
+    guess-workspace = ! ws=`${git:-git} scripts-workspace` && cd \"${GIT_PREFIX}\" >/dev/null 2>&1 && ${__sk_visualize_sk__:+echo} sh \"${ws}\"/scripts/guess-workspace
     gg = ! ${git:-git} launch-in \"${GIT_PREFIX}\" guess-workspace
     ggl = ! ${git:-git} launch-in \"${GIT_PREFIX}\" guess-workspace --list
 

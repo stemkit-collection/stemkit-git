@@ -20,4 +20,4 @@
     default = upstream
 
 [include]
-    path = dot-gitaliases
+    path = dot-gitloader
