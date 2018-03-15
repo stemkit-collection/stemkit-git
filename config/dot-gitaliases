@@ -34,8 +34,10 @@
     su = ! ${git:-git} launch-in \"${GIT_PREFIX}\" ss --untracked-files=all
     si = ! ${git:-git} launch-in \"${GIT_PREFIX}\" ss --ignored
 
-    visualize = ! ruby -e \"puts ARGV.map{|s|s.gsub(/.*\\s.*/,&:inspect).gsub(/%C[(].+?[)]/,'')}.join(' ')\" -- git
-    what = ! __sk_visualize_sk__=visualize ${git:-git} launch-in \"${GIT_PREFIX}\"
+    visualize = ! ruby -e \"puts ARGV.map{|s|s.gsub(/.*\\s.*/,&:inspect)}.join(' ')\" -- git
+    visualize-no-color = ! git visualize \"${@}\" | ruby -p -e \"gsub(/%C[(].+?[)]/,'')\" "#"
+    what  = ! __sk_visualize_sk__=visualize-no-color ${git:-git} launch-in \"${GIT_PREFIX}\"
+    whatc = ! __sk_visualize_sk__=visualize ${git:-git} launch-in \"${GIT_PREFIX}\"
 
     log-name = ! echo \"%C(yellow dim)${1}%C(reset)%C(auto)\" "#"
     log-name-trunc = ! ${git:-git} log-name \"%<(19,trunc)${1}\" "#"
@@ -48,7 +50,12 @@
     from-top = ! ${git:-git} labeled-rev-parse-show \"${GIT_PREFIX}\" prefix
     to-top = ! ${git:-git} labeled-rev-parse-show \"${GIT_PREFIX}\" cdup
     top = ! ${git:-git} labeled-rev-parse-show \"${GIT_PREFIX}\" toplevel
-    ws = ! t=`${git:-git} top` c=${?} sh -c "'[ \"${c}\" = 0 -a -f \"${t}\"/.git ] || { echo ${t:-./}; exit ${c}; } && ${git:-git} -C .. top'"
+
+    workspace = ! t=`${git:-git} top` c=${?} sh -c "'[ \"${c}\" = 0 -a -f \"${t}\"/.git ] || { echo ${t:-./}; exit ${c}; } && ${git:-git} -C .. top'"
+    ws = ! git workspace
+
+    master-workspace = ! ${git:-git} config --show-origin --get-all include.path | sed -n 's/^file:\\(.*\\)\\/config\\/dot-gitloader[[:space:]].*$/\\1/p' | tail -1
+    mws = ! ${git:-git} master-workspace
 
     replace-prefixes = ! p=`${git:-git} -C \"${GIT_PREFIX}\" to-top` sh -c '${git:-git} launch-in \"${GIT_PREFIX}\" \"${0}\" --src-prefix=${p} --dst-prefix=${p} \"${@}\"'
 
@@ -99,17 +106,18 @@
     ddwb = ! ${git:-git} launch-in \"${GIT_PREFIX}\" ddw `${git:-git} branch-rev-range \"${@}\"` "#"
 
     tt   = ! find -L `pwd` -maxdepth 6 -name .git -exec dirname {} "';'" | xargs -I{} sh -c "'echo \"## {}\" 1>&2 && [ ${#} = 0 ] || ${git:-git} -C \"{}\" \"${@}\"'" --
-    wtt  = ! ws=`${git:-git} ws` && ${__sk_visualize_sk__:+echo} ${git:-git} -C \"${ws}\" tt
+    wtt  = ! ws=`${git:-git} workspace` && ${__sk_visualize_sk__:+echo} ${git:-git} -C \"${ws}\" tt
 
-    update-worktrees = ! ws=`${git:-git} ws` && ${__sk_visualize_sk__:+echo} sh \"${ws}\"/scripts/update-worktrees
-    uu = ! ${git:-git} update-worktrees
+    run-script = ! mws=`${git:-git} mws` && ws=`${git:-git} ws` && cd \"${GIT_PREFIX:-.}\" && ${__sk_visualize_sk__:+echo} sh -c 'PATH='\""${ws}/scripts:${mws:+${mws}/scripts:}"\"'${PATH} \"${@}\"' --
 
-    restore-worktrees = ! ws=`${git:-git} ws` && ${__sk_visualize_sk__:+echo} sh \"${ws}\"/scripts/restore-worktrees
-    rr = ! ${git:-git} restore-worktrees
+    update-worktrees = ! ${git:-git} launch-in \"${GIT_PREFIX}\" run-script update-worktrees
+    uu = ! ${git:-git} launch-in \"${GIT_PREFIX}\" update-worktrees
 
-    guess-workspace = ! ws=`${git:-git} ws` && cd \"${GIT_PREFIX}\" >/dev/null 2>&1 && ${__sk_visualize_sk__:+echo} sh \"${ws}\"/scripts/guess-workspace
+    restore-worktrees = ! ${git:-git} launch-in \"${GIT_PREFIX}\" run-script restore-worktrees
+    rr = ! ${git:-git} launch-in \"${GIT_PREFIX}\" restore-worktrees
+
+    guess-workspace = ! ${git:-git} launch-in \"${GIT_PREFIX}\" run-script guess-workspace
     gg = ! ${git:-git} launch-in \"${GIT_PREFIX}\" guess-workspace
-    ggl = ! ${git:-git} launch-in \"${GIT_PREFIX}\" guess-workspace --list
 
     ww   = ! ${git:-git} ${__sk_visualize_sk__} worktree
     wwl  = ! ${git:-git} ww list

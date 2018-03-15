@@ -25,7 +25,7 @@ process_branches () {
 }
 
 make_worktree () {
-  top=${DIRECTORY:-'.'}/${1}/${OFFSET:-'src'}
+  top=${DIRECTORY:-'.'}/`branch_as_path "${1}"`/${OFFSET:-'src'}
 
   [ -e "${top}" ] && {
     info "Already exists" "${top}"

@@ -10,20 +10,22 @@ report_git_sh_lib_found () {
   debug "git.sh.lib" "${script_full_path}" "${*}"
 }
 
-git () {
-  __git__ ${__git_exec__} "${SK_GIT_REAL:?}" -c include.path="${SK_GIT_ALIASES:?}" "${@}"
+setup_git_environment () {
+  git gfb-aliases-available 2>&5 || {
+    git () {
+      __trace__ ${__git_exec__} "${SK_GIT_REAL:?}" -c include.path="${SK_GIT_LOADER:?}" "${@}"
+    }
+
+    unset __git_ws_root__
+
+    ensure_git_real
+    ensure_git_loader
+  }
 }
 
-__git__() {
+__trace__() {
   [ "${DEBUG}" = yes ] && output 6 == "${@}"
   "${@}"
-}
-
-setup_git_environment () {
-  unset __git_ws_root__
-
-  ensure_git_real
-  ensure_git_aliases
 }
 
 from_ws_root () {
@@ -67,12 +69,16 @@ ensure_git_real () {
   exit 2
 }
 
-ensure_git_aliases () {
-  figure_ws_root_unless_set "${SK_GIT_ALIASES}" || return
-  aliases=`from_ws_root config/dot-gitaliases`
+branch_as_path () {
+    echo "${1}" | sed 's#[/.]\{1,\}#/#g'
+}
+
+ensure_git_loader () {
+  figure_ws_root_unless_set "${SK_GIT_LOADER}" || return
+  aliases=`from_ws_root config/dot-gitloader`
 
   [ -f "${aliases}" ] && {
-    SK_GIT_ALIASES=${aliases} export SK_GIT_ALIASES
+    SK_GIT_LOADER=${aliases} export SK_GIT_LOADER
     return
   }
 

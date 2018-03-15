@@ -1,0 +1,8 @@
+# vim: ft=gitconfig: sw=4:
+#
+# We use this intermediate file for loading dot-gitaliases to be able to
+# address both loading by including dot-gitconfig from ~/.gitconfig as
+# well as when scripts/hook/git gets used.
+#
+[include]
+    path = dot-gitaliases

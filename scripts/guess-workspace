@@ -9,10 +9,7 @@ unset OFFSET SAFE
 
 main () {
   parse_command_line "${@}"
-
-  git gfb-aliases-available 2>&5 || {
-    import git && setup_git_environment
-  }
+  setup_git_environment
 
   ROOT=`git ws 2>&5` || ROOT=`git -C "${script_folder}" ws` || {
     return 2
@@ -91,7 +88,7 @@ collect_available () {
 check_match () {
   for matcher in ${matchers}; do
     case "${1}" in
-      *"${matcher}"* )
+      *`branch_as_path "${matcher}"`* )
         continue
       ;;
     esac
@@ -134,4 +131,4 @@ options_usage () {
 }
 
 . `type "${0}" | awk '{print $(NF)}' | xargs dirname`/core.sh.lib
-start "${@}"
+start import=git "${@}"
