@@ -33,7 +33,7 @@ make_worktree () {
   top=${DIRECTORY:-'.'}/`branch_as_path "${1}"`/${OFFSET:-'src'}
 
   [ -e "${top}" ] && {
-    info "Already exists" "${top} (${1})"
+    info "Already exists" "${top} -> ${1}"
     return 0
   }
 
