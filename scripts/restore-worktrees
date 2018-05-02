@@ -18,6 +18,11 @@ main () {
 
 process_branches () {
   for branch in "${@}"; do
+    (echo "${branch}" | egrep -q '^([0-9]+[.])|[#@=+%]') && {
+      info "Ignored for prefix" "${branch}"
+      continue
+    }
+
     make_worktree ${branch} || {
       warning 'Problems detected, check prior messages.'
     }
@@ -28,7 +33,7 @@ make_worktree () {
   top=${DIRECTORY:-'.'}/`branch_as_path "${1}"`/${OFFSET:-'src'}
 
   [ -e "${top}" ] && {
-    info "Already exists" "${top}"
+    info "Already exists" "${top} -> ${1}"
     return 0
   }
 
