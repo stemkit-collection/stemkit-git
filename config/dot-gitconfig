@@ -11,10 +11,10 @@
     ui = auto
 
 [color "branch"]
-    current = green nobold
-    remote = cyan dim
-    local = white dim
-    upstream = yellow dim
+    current = green
+    remote = cyan dim bold
+    local = white dim bold
+    upstream = yellow dim bold
 
 [push]
     default = upstream
