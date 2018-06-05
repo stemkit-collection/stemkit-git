@@ -16,6 +16,11 @@
     local = white dim bold
     upstream = yellow dim bold
 
+[color "decorate"]
+    tag = red bold
+    branch = green
+    remoteBranch = yellow dim bold
+
 [push]
     default = upstream
 
