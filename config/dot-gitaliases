@@ -34,8 +34,8 @@
     su = ! ${git:-git} launch-in \"${GIT_PREFIX}\" ss --untracked-files=all
     si = ! ${git:-git} launch-in \"${GIT_PREFIX}\" ss --ignored
 
-    visualize = ! 1>&2 ruby -e \"puts ARGV.map{|s|s.gsub(/.*\\s.*/,&:inspect)}.join(' ')\" -- git
-    visualize-no-color = ! git visualize \"${@}\" 2>&1 | 1>&2 ruby -pe \"gsub(/%C[(].+?[)]/,'')\" "#"
+    visualize = ! 1>&2 ruby -e \"puts ARGV.map{|s|s.gsub(%r{.*\\s.*},&:inspect)}.join(' ')\" -- git
+    visualize-no-color = ! git visualize \"${@}\" 2>&1 | 1>&2 ruby -pe \"gsub(%r{%C[(].+?[)]},'')\" "#"
     what  = ! __sk_visualize_sk__=visualize-no-color ${git:-git} launch-in \"${GIT_PREFIX}\"
     whatc = ! __sk_visualize_sk__=visualize ${git:-git} launch-in \"${GIT_PREFIX}\"
 
@@ -129,10 +129,10 @@
     bbr  = ! ${git:-git} bb -r --column=auto
     bbv  = ! ${git:-git} bb -vv
 
-    who = ! ${git:-git} launch-in \"${GIT_PREFIX}\" ${__sk_visualize_sk__} blame \"`${git:-git} date-param`\" \"${@}\" | ruby -pe 'gsub(/^(\\S+) .*?\\((.*)$/, %q[\\1 \\2])' | \"${PAGER:-cat}\" "#"
+    who = ! ${git:-git} launch-in \"${GIT_PREFIX}\" ${__sk_visualize_sk__} blame \"`${git:-git} date-param`\" \"${@}\" | ruby -pe 'gsub(%r{^(\\S+) .*?\\((.*)$}, %q{\\1 \\2})' | \"${PAGER:-cat}\" "#"
 
     bbs  = ! ${git:-git} bb -vv --color \"${@}\" | ruby -ne 'scan(%r{^([*]?\\s*\\S+.*?)\\S+\\s+\\[([^\\]:]*?) *: *([^\\]:]*?)\\]}){|b,r,s|puts %q{%s %-12s %s}%[b,s,r]}' "#"
-    bbb = ! ${git:-git} bbs --no-color | ruby -ne "'puts scan(/^[*\\s]*(\\S+)/)'" "#"
+    bbb = ! ${git:-git} bbs --no-color | ruby -ne "'puts scan(%r{^[*\\s]*(\\S+)})'" "#"
     bbc  = ! ${git:-git} branch -vv --color | grep '^[*] '
 
     branch-remote-owner = ! git branch -r --list ${1:+${1}/*} | xargs -I\"{}\" git log-date-as \"%h %cd `git log-name-trunc %cN` {}\" \"{}\" --color -1 "#"
