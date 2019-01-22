@@ -30,7 +30,7 @@ process_branches () {
 }
 
 make_worktree () {
-  top=${DIRECTORY:-'.'}/`branch_as_path "${1}"`/${OFFSET:-'src'}
+  top=`figure_directory`/`branch_as_path "${1}"`/`figure_offset`
 
   [ -e "${top}" ] && {
     info "Already exists" "${top} -> ${1}"
@@ -38,6 +38,19 @@ make_worktree () {
   }
 
   run git worktree add "${top}" "${1}"
+}
+
+figure_directory () {
+  value_config_or_default "${DIRECTORY}" stm.workspaces.directory .
+}
+
+figure_offset () {
+  value_config_or_default "${OFFSET}" stm.workspaces.offset src
+}
+
+value_config_or_default () {
+  value="${1:-${2:+`git config ${2}`}}"
+  echo "${value:-${3}}"
 }
 
 process_option () {
