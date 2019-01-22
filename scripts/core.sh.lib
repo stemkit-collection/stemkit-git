@@ -11,6 +11,7 @@
 #   process_option <option> [ <argument> ] => 0, 2, 3, 4 (see declaration)
 #   process_parameters "${@}" => 0: success, otherwise exits with error
 #   options_usage => ?: ignored, echo string to stdout
+#   extra_usage_info => ?: ignored, echo strings to stdout
 #
 # @provides
 #   parse_command_line "${@}"
@@ -156,7 +157,13 @@ usage_and_exit () {
   [ ${#} != 0 ] && error "${@}"
 
   usage "`options_usage`"
+  invoke_if_function extra_usage_info
+
   exit "${status}"
+}
+
+invoke_if_function () {
+  typeset -f "${1}" 1>&5 && "${@}"
 }
 
 run () {
