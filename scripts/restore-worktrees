@@ -7,6 +7,9 @@ unset DIRECTORY OFFSET
 GIT_CONFIG_P_DIRECTORY=stm.workspaces.directory
 GIT_CONFIG_P_OFFSET=stm.workspaces.offset
 
+DEFAULT_DIRECTORY=work-tree
+DEFAULT_OFFSET=src
+
 main () {
   parse_command_line "${@}"
   setup_git_environment
@@ -44,11 +47,11 @@ make_worktree () {
 }
 
 figure_directory () {
-  value_config_or_default "${DIRECTORY}" "${GIT_CONFIG_P_DIRECTORY}" .
+  value_config_or_default "${DIRECTORY}" "${GIT_CONFIG_P_DIRECTORY}" "${DEFAULT_DIRECTORY}"
 }
 
 figure_offset () {
-  value_config_or_default "${OFFSET}" "${GIT_CONFIG_P_OFFSET}" src
+  value_config_or_default "${OFFSET}" "${GIT_CONFIG_P_OFFSET}" "${DEFAULT_OFFSET}"
 }
 
 value_config_or_default () {
@@ -86,8 +89,8 @@ options_usage () {
 }
 
 extra_usage_info () {
-  output 2 "git-config: "${GIT_CONFIG_P_DIRECTORY}": top folder (.)"
-  output 2 "git-config: "${GIT_CONFIG_P_OFFSET}": folder offset (src)"
+  output 2 "git-config: ${GIT_CONFIG_P_DIRECTORY}: top folder (${DEFAULT_DIRECTORY})"
+  output 2 "git-config: ${GIT_CONFIG_P_OFFSET}: folder offset (${DEFAULT_OFFSET})"
 }
 
 . `type "${0}" | awk '{print $(NF)}' | xargs dirname`/core.sh.lib
