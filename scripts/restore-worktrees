@@ -7,7 +7,7 @@ unset DIRECTORY OFFSET
 GIT_CONFIG_P_DIRECTORY=stm.workspaces.directory
 GIT_CONFIG_P_OFFSET=stm.workspaces.offset
 
-DEFAULT_DIRECTORY=work-tree
+DEFAULT_DIRECTORY=work-trees
 DEFAULT_OFFSET=src
 
 main () {
