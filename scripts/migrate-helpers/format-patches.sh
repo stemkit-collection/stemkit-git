@@ -1,0 +1,2 @@
+# git rev-list --reverse @                  -- . | (count=1; while read commit; do git format-patch -n --start-number "${count}" -o `git ws`/../patches/ "${commit}" -1; count=`expr "${count}" + 1`; done)
+  git rev-list --reverse 71158356..2e2fd502 -- . | (count=1; while read commit; do git format-patch -n --start-number "${count}" -o `git ws`/../patches/ "${commit}" -1; count=`expr "${count}" + 1`; done)
