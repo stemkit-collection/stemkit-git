@@ -4,8 +4,9 @@
 
 unset DIRECTORY OFFSET
 
-GIT_CONFIG_P_DIRECTORY=stm.workspaces.directory
-GIT_CONFIG_P_OFFSET=stm.workspaces.offset
+GIT_CONFIG_P_SECTION=stm.workspace
+GIT_CONFIG_P_DIRECTORY="${GIT_CONFIG_P_SECTION}".directory
+GIT_CONFIG_P_OFFSET="${GIT_CONFIG_P_SECTION}".offset
 
 DEFAULT_DIRECTORY=work-trees
 DEFAULT_OFFSET=src
@@ -85,12 +86,21 @@ process_parameters () {
 }
 
 options_usage () {
-  echo "`standard_options_usage`[--directory|-d <folder=.>][--offset|-o <folder=src>"
+  echo "`standard_options_usage`[--directory|-d <folder>][--offset|-o <folder>]"
 }
 
 extra_usage_info () {
-  output 2 "git-config: ${GIT_CONFIG_P_DIRECTORY}: top folder (${DEFAULT_DIRECTORY})"
-  output 2 "git-config: ${GIT_CONFIG_P_OFFSET}: folder offset (${DEFAULT_OFFSET})"
+  output 2
+  output 2 "Current settings:"
+
+  git config --list | fgrep -e "${GIT_CONFIG_P_DIRECTORY}" -e "${GIT_CONFIG_P_OFFSET}" | {
+    sed 's/^\([^=]*\)=\(.*\)$/  "\1" => "\2"/g'
+  }
+
+  output 2
+  output 2 "Assumed unless listed above:"
+  output 2 "  git config --local --replace-all \"${GIT_CONFIG_P_DIRECTORY}\" \"${DEFAULT_DIRECTORY}\""
+  output 2 "  git config --local --replace-all \"${GIT_CONFIG_P_OFFSET}\" \"${DEFAULT_OFFSET}\""
 }
 
 . `type "${0}" | awk '{print $(NF)}' | xargs dirname`/core.sh.lib
