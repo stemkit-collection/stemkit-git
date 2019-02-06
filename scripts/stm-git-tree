@@ -14,7 +14,11 @@ main () {
 process_parameters () {
   setup_git_environment
 
-  folder=`full_folder_path "${FOLDER}"`
+  folder=`full_folder_path "${FOLDER}"` || {
+    error "Not a folder" "\"${FOLDER}\""
+    exit 2
+  }
+
   info "Processing ${folder}"
 
   [ "${#}" -eq 0 ] && unset FORCE
