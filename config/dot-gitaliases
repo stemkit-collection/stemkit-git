@@ -52,7 +52,7 @@
     to-top = ! ${git:-git} labeled-rev-parse-show \"${GIT_PREFIX}\" cdup
     top = ! ${git:-git} labeled-rev-parse-show \"${GIT_PREFIX}\" toplevel
 
-    workspace = ! t=`${git:-git} top` c=${?} sh -c "'[ \"${c}\" = 0 -a -f \"${t}\"/.git ] || { echo ${t:-./}; exit ${c}; } && ${git:-git} -C .. top'"
+    workspace = ! t=`${git:-git} top` c=${?} sh -c "'[ \"${c}\" = 0 -a -f \"${t}\"/.git ] || { echo ${t:-./}; exit ${c}; } && sed -n \"s%^[^/]*\\(/.*\\)/.git/.*%\\1%p\" \"${t}\"/.git'"
     ws = ! git workspace
 
     master-workspace = ! ${git:-git} config --show-origin --get-all include.path | sed -n 's/^file:\\(.*\\)\\/config\\/dot-gitloader[[:space:]].*$/\\1/p' | tail -1
