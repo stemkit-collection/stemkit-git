@@ -235,11 +235,12 @@ contains_item() {
 
 convert_input_to_full_path () {
   while read path; do
-    name=`basename "${path}"`
-    folder=`dirname "${path}"`
-
-    (cd "${folder}" 2>&5 && echo "`pwd`/${name}")
+    full_folder_path `dirname "${path}"` | xargs -I{} echo {}/`basename "${path}"`
   done
+}
+
+full_folder_path () {
+  (cd "${1}" 2>&5 1>&2 && pwd)
 }
 
 full_prog_path () {
