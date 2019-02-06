@@ -36,7 +36,7 @@ main () {
 
   case ${#} in
     1)
-      target=${ROOT}/${1}
+      target=`figure_branch_path "${1}"`
 
       [ "${OFFSET:-./}" = ./ ] || {
         deep_target=`echo "${target}/${OFFSET}" | sed 's%/$%%'`
@@ -51,14 +51,14 @@ main () {
     ;;
 
     0)
-      error 'No workspaces for matchers' ${matchers}
-      info 'Available workspaces:'
+      error 'No branches for matchers' ${matchers}
+      info 'Available branches:'
       output_filtered no 2 '  ' ${available}
     ;;
 
     *)
-      error 'Ambiguous workspaces for matchers' ${matchers}
-      info 'Matching workspaces:'
+      error 'Ambiguous branches for matchers' ${matchers}
+      info 'Matching branches:'
       output_filtered no 2 '  ' ${matching}
     ;;
   esac
@@ -82,13 +82,23 @@ output_filtered () {
 }
 
 collect_available () {
-  git -C "${ROOT}" tt 2>&1 | sed -n "s%^[# ]*${ROOT}/%%p"
+  branches_with_worktrees | awk '{print $1}' | sort
+}
+
+branches_with_worktrees () {
+  git -C "${ROOT}" worktree list | {
+    sed -n 's/^\([^ ]*\).*\[\(.*\)\]$/\2 \1/p'
+  }
+}
+
+figure_branch_path () {
+  branches_with_worktrees | awk -v b="${1}" '$1 == b {print $2; exit}'
 }
 
 check_match () {
   for matcher in ${matchers}; do
     case "${1}" in
-      *`branch_as_path "${matcher}"`* )
+      *${matcher}* )
         continue
       ;;
     esac
