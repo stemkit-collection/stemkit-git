@@ -61,14 +61,14 @@ main () {
       error 'No branches for matchers' ${matchers}
       info 'Available branches:'
 
-      indent_output_from output_each ${available} 1>&2
+      indent_output_from worktrees_for_branches ${available} 1>&2
     ;;
 
     *)
       error 'Ambiguous branches for matchers' ${matchers}
       info 'Matching branches:'
 
-      indent_output_from output_each ${matching} 1>&2
+      indent_output_from worktrees_for_branches ${matching} 1>&2
     ;;
   esac
 
