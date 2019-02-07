@@ -108,7 +108,7 @@
 
     foreach-stdin-line = ! xargs -I{} sh -c "'echo \"## {}\" 1>&2 && [ ${#} = 0 ] || ${git:-git} -C `echo {} | sed \"s/^.* //\"` \"${@}\"'" --
     tt   = ! find -L `pwd` -maxdepth 6 -name .git -exec dirname {} "';'" | ${git:-git} foreach-stdin-line
-    wtt  = ! ${git:-git} run-script guess-workspace -w | ${git:-git} foreach-stdin-line
+    wtt  = ! ${git:-git} run-script guess-worktree -lw | ${git:-git} foreach-stdin-line
 
     run-script = ! mws=`${git:-git} mws` && ws=`${git:-git} ws` && cd \"${GIT_PREFIX:-.}\" >/dev/null && ${__sk_visualize_sk__:+echo} sh -c 'PATH='\""${ws}/scripts:${mws:+${mws}/scripts:}"\"'${PATH} \"${@}\"' --
 
@@ -118,8 +118,8 @@
     restore-worktrees = ! ${git:-git} launch-in \"${GIT_PREFIX}\" run-script restore-worktrees
     rr = ! ${git:-git} launch-in \"${GIT_PREFIX}\" restore-worktrees
 
-    guess-workspace = ! ${git:-git} launch-in \"${GIT_PREFIX}\" run-script guess-workspace
-    gg = ! ${git:-git} launch-in \"${GIT_PREFIX}\" guess-workspace
+    guess-worktree = ! ${git:-git} launch-in \"${GIT_PREFIX}\" run-script guess-worktree
+    gg = ! ${git:-git} launch-in \"${GIT_PREFIX}\" guess-worktree
 
     ww   = ! ${git:-git} ${__sk_visualize_sk__} worktree
     wwl  = ! ${git:-git} ww list
