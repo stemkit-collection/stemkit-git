@@ -1,8 +1,13 @@
 # Workspaces
 
+
 This branch is convenient for managing multiple Git work trees (workspaces) in
 subfolders. Using work trees makes it possible to work simultaneously with
 different product branches checking them out in dedictated subfolders.
+
+### Quick workspace creation
+
+    curl -sL https://raw.github.com/stemkit-collection/stemkit-git/master/scripts/make-workspace | sh -s -- -f *local-repository-folder*
 
 ## Using the branch
 
@@ -11,7 +16,8 @@ tracking remote `users/bystrg/workspaces` and check it out:
 
     $ git checkout -b workspaces origin/users/bystrg/workspaces
 
-> **Note**: *The above command assumes a remote named `origin`. Use the name of your own remote if different.*
+> **Note**: *The above command assumes a remote named `origin`.*
+> *Use the name of your own remote if different.*
 
 This will be your top level branch. For other branches you will be creating
 separate workspaces in subfolders using `git worktree` command. Those
