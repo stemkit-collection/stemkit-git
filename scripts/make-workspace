@@ -42,7 +42,7 @@ main () {
   MARKER='=='
 
   [ "${FORCE}" = yes ] || {
-    banner "\
+    banner "
       |
       | FYI: Simulation mode (dry-run), use opton -f for normal run
       |"
@@ -67,7 +67,7 @@ main () {
   unset CLEANUP_LIST
 
   [ "${FORCE}" = yes ] && {
-    banner "\
+    banner "
       |
       | SUCCESS: Created stm-git workpace at \"`pwd`\"
       |
@@ -82,12 +82,12 @@ main () {
       | an entry unconditionally:
       |
       | $ git config --global --add include.path `pwd`/config/dot-gitconfig
-    "
+      |"
   }
 }
 
 banner () {
-  echo "${@}" | sed 's/^ *|/|/' 1>&6
+  echo "${@}" | sed -n 's/^ *|/|/p' 1>&6
 }
 
 cleanup () {
@@ -104,14 +104,14 @@ run () {
 }
 
 usage_and_exit () {
-  banner "\
+  banner "
     |
     | USAGE: ${script_name} [-h][-f][-b <branch>][-o <origin>] <folder-to-create>
     |
     | Default values:
     |     branch => \"${BRANCH}\"
     |     origin => \"${ORIGIN}\"
-  "
+    |"
 
   exit "${1:-0}"
 }
