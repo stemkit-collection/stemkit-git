@@ -16,3 +16,29 @@ ensure_git_workspace () {
     exit 2
   }
 }
+
+branch_as_path () {
+  echo "${1}" | sed 's#[/.]\{1,\}#/#g'
+}
+
+branches_with_worktrees () {
+  git worktree list | {
+    sed -n 's/^\([^ ]*\).*\[\(.*\)\]$/\2 \1/p'
+  }
+}
+
+branches_without_worktrees () {
+  branches_with_worktrees | awk '{print $1}'
+}
+
+worktrees_without_branches () {
+  branches_with_worktrees | awk '{print $2}'
+}
+
+branch_to_worktree () {
+  branches_with_worktrees | awk -v b="${1}" '$1 == b {print $2; exit}'
+}
+
+worktree_to_branch () {
+  branches_with_worktrees | awk -v w="${1}" '$2 == w {print $1; exit}'
+}

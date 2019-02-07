@@ -24,8 +24,8 @@ main () {
     PUSH=yes
   }
 
-  git tt top 2>&5 | while read top; do
-    cd "${top}" && sync_branch
+  worktrees_without_branches | while read worktree; do
+    cd "${worktree}" && sync_branch
   done
 }
 
@@ -170,4 +170,4 @@ options_usage () {
 }
 
 . `type "${0}" | awk '{print $(NF)}' | xargs dirname`/core.sh.lib
-start import=ws,git "${@}"
+start import=git,ws "${@}"

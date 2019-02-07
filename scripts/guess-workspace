@@ -24,6 +24,8 @@ main () {
     OFFSET=`git from-top 2>&5`
   }
 
+  cd "${ROOT}" || exit "${?}"
+
   available=`collect_available`
   matching=`output_filtered yes 1 '' ${available}`
 
@@ -36,7 +38,7 @@ main () {
 
   case ${#} in
     1)
-      target=`figure_branch_path "${1}"`
+      target=`branch_to_worktree "${1}"`
 
       [ "${OFFSET:-./}" = ./ ] || {
         deep_target=`echo "${target}/${OFFSET}" | sed 's%/$%%'`
@@ -82,17 +84,7 @@ output_filtered () {
 }
 
 collect_available () {
-  branches_with_worktrees | awk '{print $1}' | sort
-}
-
-branches_with_worktrees () {
-  git -C "${ROOT}" worktree list | {
-    sed -n 's/^\([^ ]*\).*\[\(.*\)\]$/\2 \1/p'
-  }
-}
-
-figure_branch_path () {
-  branches_with_worktrees | awk -v b="${1}" '$1 == b {print $2; exit}'
+  branches_without_worktrees | sort
 }
 
 check_match () {
@@ -141,4 +133,4 @@ options_usage () {
 }
 
 . `type "${0}" | awk '{print $(NF)}' | xargs dirname`/core.sh.lib
-start import=git "${@}"
+start import=git,ws "${@}"

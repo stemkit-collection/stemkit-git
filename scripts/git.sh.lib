@@ -75,10 +75,6 @@ ensure_git_real () {
   exit 2
 }
 
-branch_as_path () {
-    echo "${1}" | sed 's#[/.]\{1,\}#/#g'
-}
-
 ensure_git_loader () {
   figure_ws_root_unless_set "${SK_GIT_LOADER}" || return
   aliases=`from_ws_root config/dot-gitloader`

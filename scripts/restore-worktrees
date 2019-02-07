@@ -104,4 +104,4 @@ extra_usage_info () {
 }
 
 . `type "${0}" | awk '{print $(NF)}' | xargs dirname`/core.sh.lib
-start import=ws,git "${@}"
+start import=git,ws "${@}"
