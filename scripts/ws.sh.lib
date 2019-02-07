@@ -39,6 +39,19 @@ branch_to_worktree () {
   branches_with_worktrees | awk -v b="${1}" '$1 == b {print $2; exit}'
 }
 
+worktrees_for_branches () {
+  branches_with_worktrees | awk -v input="${*}" '
+    BEGIN {
+      split(input, array)
+      for (position in array)
+        branches[array[position]]
+    }
+    $1 in branches {
+      print $2
+    }
+  '
+}
+
 worktree_to_branch () {
   branches_with_worktrees | awk -v w="${1}" '$2 == w {print $1; exit}'
 }

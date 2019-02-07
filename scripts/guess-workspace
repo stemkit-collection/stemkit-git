@@ -29,7 +29,11 @@ main () {
   available=`collect_available`
   matching=`output_filtered yes 1 '' ${available}`
 
-  [ "${LIST}" = yes ] && {
+  [ "${LIST}" = no ] || {
+    [ "${LIST}" = worktrees ] && {
+      matching=`worktrees_for_branches ${matching}`
+    }
+
     output_filtered no 1 '' ${matching}
     return 0
   }
@@ -110,8 +114,12 @@ process_option () {
       DESCEND=no
     ;;
 
+    --worktrees | -w )
+      LIST=worktrees
+    ;;
+
     --list | -l )
-      LIST=yes
+      LIST=branches
     ;;
 
     --safe | -s )
