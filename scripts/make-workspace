@@ -1,0 +1,122 @@
+#!/bin/sh
+# vim: ft=sh: sw=2:
+# Author: Gennady Bystritsky (bystr@mac.com)
+
+REMOTE_REPO="https://github.com/stemkit-collection/stemkit-git.git"
+ORIGIN="remote-gh-stm-git"
+BRANCH="workspace"
+
+unset FORCE CLEANUP_LIST
+
+main () {
+  while getopts ":hfb:o:" option; do
+    case "${option}" in
+      h)
+        usage_and_exit
+      ;;
+
+      f)
+        FORCE=yes
+      ;;
+
+      b)
+        BRANCH="${OPTARG}"
+      ;;
+
+      o)
+        ORIGIN="${OPTARG}"
+      ;;
+
+      *)
+        usage_and_exit 2
+      ;;
+    esac
+  done
+
+  shift `expr "${OPTIND}" - 1`
+  [ "${#}" -ne 1 ] && {
+    echo "ERROR: Folder for local repository not specified."
+    usage_and_exit 3
+  }
+
+  MARKER='=='
+
+  [ "${FORCE}" = yes ] || {
+    banner "\
+      |
+      | FYI: Simulation mode (dry-run), use opton -f for normal run
+      |"
+
+    MARKER='##'
+  }
+
+  run mkdir "${1}"
+  run cd "${1}" 1>&5
+
+  [ "${FORCE}" = yes ] && {
+    CLEANUP_LIST=`pwd`
+    trap cleanup 0 2 15
+  }
+
+  run git init .
+
+  run git remote add "${ORIGIN}" "${REMOTE_REPO}"
+  run git remote update
+
+  run git checkout -b "${BRANCH}" "${ORIGIN}/master"
+  unset CLEANUP_LIST
+
+  [ "${FORCE}" = yes ] && {
+    banner "\
+      |
+      | SUCCESS: Created stm-git workpace at \"`pwd`\"
+      |
+      | Please add the following entry to your \$HOME/.gitconfig file
+      | unless already present pointing to another similarly created
+      | workspace:
+      |
+      | [include]
+      |     path = `pwd`/config/dot-gitconfig
+      |
+      | Alternatively, you may run the following command to add such
+      | an entry unconditionally:
+      |
+      | $ git config --global --add include.path `pwd`/config/dot-gitconfig
+    "
+  }
+}
+
+banner () {
+  echo "${@}" | sed 's/^ *|/|/' 1>&6
+}
+
+cleanup () {
+  for entry in ${CLEANUP_LIST}; do
+    run rm -rf "${entry}"
+  done
+}
+
+run () {
+  echo "${MARKER} ${@}" 1>&6
+  [ "${FORCE}" = yes ] || return 0
+
+  "${@}" || exit "${?}"
+}
+
+usage_and_exit () {
+  banner "\
+    |
+    | USAGE: ${script_name} [-h][-f][-b <branch>][-o <origin>] <folder-to-create>
+    |
+    | Default values:
+    |     branch => \"${BRANCH}\"
+    |     origin => \"${ORIGIN}\"
+  "
+
+  exit "${1:-0}"
+}
+
+script_name=`basename "${0}"`
+exec 5>/dev/null 6>&2
+
+main "${@}"
