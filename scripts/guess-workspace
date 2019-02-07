@@ -27,14 +27,15 @@ main () {
   cd "${ROOT}" || exit "${?}"
 
   available=`collect_available`
-  matching=`output_filtered yes 1 '' ${available}`
+  matching=`output_matching ${available}`
 
   [ "${LIST}" = no ] || {
     [ "${LIST}" = worktrees ] && {
-      matching=`worktrees_for_branches ${matching}`
+      worktrees_for_branches ${matching}
+      return 0
     }
 
-    output_filtered no 1 '' ${matching}
+    output_each ${matching}
     return 0
   }
 
@@ -47,43 +48,43 @@ main () {
       [ "${OFFSET:-./}" = ./ ] || {
         deep_target=`echo "${target}/${OFFSET}" | sed 's%/$%%'`
         [ -d "${deep_target}" ] && {
-          output 1 "${deep_target}"
+          echo "${deep_target}"
           return 0
         }
       }
 
-      output 1 "${target}"
+      echo "${target}"
       return 0
     ;;
 
     0)
       error 'No branches for matchers' ${matchers}
       info 'Available branches:'
-      output_filtered no 2 '  ' ${available}
+
+      indent_output_from output_each ${available} 1>&2
     ;;
 
     *)
       error 'Ambiguous branches for matchers' ${matchers}
       info 'Matching branches:'
-      output_filtered no 2 '  ' ${matching}
+
+      indent_output_from output_each ${matching} 1>&2
     ;;
   esac
 
-  [ "${SAFE}" = yes ] && output 1 .
+  [ "${SAFE}" = yes ] && echo .
   return 3
 }
 
-output_filtered () {
-  filter=${1}
-  stream=${2}
-  indent=${3}
-
-  shift 3
-
+output_each () {
   for item in "${@}"; do
-    [ "${filter}" = no ] || check_match "${item}" && {
-      output "${stream}" "${indent}${item}"
-    }
+    echo "${item}"
+  done
+}
+
+output_matching () {
+  for item in "${@}"; do
+    check_match "${item}" && echo "${item}"
   done
 }
 

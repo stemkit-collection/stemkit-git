@@ -106,7 +106,7 @@
     ddb  = ! ${git:-git} launch-in \"${GIT_PREFIX}\" dd  `${git:-git} branch-rev-range \"${@}\"` "#"
     ddwb = ! ${git:-git} launch-in \"${GIT_PREFIX}\" ddw `${git:-git} branch-rev-range \"${@}\"` "#"
 
-    foreach-stdin-line = ! xargs -I{} sh -c "'echo \"## {}\" 1>&2 && [ ${#} = 0 ] || ${git:-git} -C \"{}\" \"${@}\"'" --
+    foreach-stdin-line = ! xargs -I{} sh -c "'echo \"## {}\" 1>&2 && [ ${#} = 0 ] || ${git:-git} -C `echo {} | sed \"s/^.* //\"` \"${@}\"'" --
     tt   = ! find -L `pwd` -maxdepth 6 -name .git -exec dirname {} "';'" | ${git:-git} foreach-stdin-line
     wtt  = ! ${git:-git} run-script guess-workspace -w | ${git:-git} foreach-stdin-line
 
