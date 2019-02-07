@@ -7,7 +7,7 @@ different product branches checking them out in dedictated subfolders.
 
 ### Quick workspace creation
 
-    curl -sL https://raw.github.com/stemkit-collection/stemkit-git/master/scripts/make-workspace | sh -s -- -f *local-repository-folder*
+    curl -sL https://raw.github.com/stemkit-collection/stemkit-git/master/scripts/make-workspace | sh -s -- -f <local-repository-folder>
 
 ## Using the branch
 
