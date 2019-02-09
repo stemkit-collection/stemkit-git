@@ -2,20 +2,38 @@
 # vim: ft=sh: sw=2:
 # Author: Gennady Bystritsky (bystr@mac.com)
 
-REMOTE=no
-MERGE=yes
-PUSH=no
-EXPLICIT_PUSH=no
 
 main () {
   parse_command_line "${@}"
-  setup_git_environment
 
+  setup_git_environment
   ensure_git_workspace
+
+  REMOTE="${O_REMOTE:-no}"
+  MERGE="${O_MERGE:-no}"
+  PUSH="${O_PUSH:-no}"
+
+  restore_dry_run=no
+
+  [ "${REMOTE}" = yes ] && {
+    is_dry_run && {
+      is_explicit_runmode || {
+        [ "${MERGE}" = no ] && [ "${PUSH}" = no ] && {
+          restore_dry_run=yes
+        }
+
+        disable_dry_run
+      }
+    }
+  }
+
   report_dry_run
 
   [ "${REMOTE}" = yes ] && {
     run git remote update --prune
+  }
+
+  [ "${restore_dry_run}" = yes ] && {
     ensure_dry_run
   }
 
@@ -25,7 +43,7 @@ main () {
   }
 
   worktrees_without_branches | while read worktree; do
-    cd "${worktree}" && sync_branch
+    (cd "${worktree}" && sync_branch)
   done
 }
 
@@ -65,27 +83,27 @@ sync_branch () {
     pwd="true"
   }
 
-  [ "${PUSH}" = yes ] && {
-    ensure_no_local_changes || {
-      number=`make_number_label "${?}"`
-
-      is_dry_run && [ "${EXPLICIT_PUSH}" = no ] && {
-        warning 'Specify option --push (-p) for push action at normal run'
-        EXPLICIT_PUSH=yes # just to print the above message once
-      }
-
-      "${pwd}"
-      indent_output_from push "${number}" "${local_color}" "${remote_color}"
-      pwd="true"
-    }
-  }
-
   [ "${MERGE}" = yes ] && {
     ensure_no_remote_changes || {
       number=`make_number_label "${?}"`
       "${pwd}"
 
       indent_output_from merge_if_clean "${number}" "${local_color}" "${remote_color}"
+      pwd="true"
+    }
+  }
+
+  [ "${PUSH}" = yes ] && {
+    ensure_no_local_changes || {
+      [ "${O_PUSH}" = yes ] || {
+        ensure_dry_run
+        warning 'Specify option --push (-p) for push action at normal run'
+      }
+
+      number=`make_number_label "${?}"`
+
+      "${pwd}"
+      indent_output_from push "${number}" "${local_color}" "${remote_color}"
       pwd="true"
     }
   }
@@ -125,34 +143,31 @@ merge_if_clean () {
     return 2
   }
 
-  run git merge --ff-only
+  run echo '>>> ' git merge --ff-only
 }
 
 push () {
   info "${2} [${1}]=> ${3}"
-  run git push
+  run echo '>>> ' git push
 }
 
-process_option () {
-  debug "O" "${1} (${2})"
+unset O_REMOTE O_PUSH O_MERGE
 
+process_option () {
   option=${1}
   argument=${2}
 
   case "${option}" in
     --remote | -r )
-      REMOTE=yes
-      disable_dry_run
+      O_REMOTE=yes
     ;;
 
     --push | -p )
-      EXPLICIT_PUSH=yes
-      PUSH=yes
-      MERGE=no
+      O_PUSH=yes
     ;;
 
     --merge | -m )
-      MERGE=yes
+      O_MERGE=yes
     ;;
 
     *)
