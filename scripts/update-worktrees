@@ -135,7 +135,7 @@ merge_if_clean () {
     return 2
   }
 
-  run echo '>>> ' git merge --ff-only
+  run git merge --ff-only
 }
 
 push () {
@@ -146,7 +146,7 @@ push () {
     ensure_dry_run
   }
 
-  run echo '>>> ' git push
+  run git push
 }
 
 make_number_label () {
