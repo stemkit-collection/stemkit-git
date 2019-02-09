@@ -2,11 +2,12 @@
 # vim: ft=sh: sw=2:
 # Author: Gennady Bystritsky (bystr@mac.com)
 
-REMOTE_REPO="https://github.com/stemkit-collection/stemkit-git.git"
+REMOTE="https://github.com/stemkit-collection/stemkit-git.git"
 ORIGIN="remote-gh-stm-git"
 BRANCH="workspace"
 
-unset FORCE CLEANUP_LIST
+unset O_FORCE O_BRANCH O_ORIGIN
+unset CLEANUP_LIST
 
 main () {
   while getopts ":hfb:o:" option; do
@@ -16,15 +17,15 @@ main () {
       ;;
 
       f)
-        FORCE=yes
+        O_FORCE=yes
       ;;
 
       b)
-        BRANCH="${OPTARG}"
+        O_BRANCH="${OPTARG}"
       ;;
 
       o)
-        ORIGIN="${OPTARG}"
+        O_ORIGIN="${OPTARG}"
       ;;
 
       *)
@@ -41,7 +42,7 @@ main () {
 
   MARKER='=='
 
-  [ "${FORCE}" = yes ] || {
+  [ "${O_FORCE}" = yes ] || {
     banner "
       |
       | FYI: Simulation mode (dry-run), use opton -f for normal run
@@ -53,20 +54,23 @@ main () {
   run mkdir "${1}"
   run cd "${1}" 1>&5
 
-  [ "${FORCE}" = yes ] && {
+  [ "${O_FORCE}" = yes ] && {
     CLEANUP_LIST=`pwd`
     trap cleanup 0 2 15
   }
 
   run git init .
 
-  run git remote add "${ORIGIN}" "${REMOTE_REPO}"
+  branch="${O_BRANCH:-${BRANCH}}"
+  origin="${O_ORIGIN:-${ORIGIN}}"
+
+  run git remote add "${origin}" "${REMOTE}"
   run git remote update
 
-  run git checkout -b "${BRANCH}" "${ORIGIN}/master"
+  run git checkout -b "${branch}" "${origin}/master"
   unset CLEANUP_LIST
 
-  [ "${FORCE}" = yes ] && {
+  [ "${O_FORCE}" = yes ] && {
     banner "
       |
       | SUCCESS: Created stm-git workpace at \"`pwd`\"
@@ -98,7 +102,7 @@ cleanup () {
 
 run () {
   echo "${MARKER} ${@}" 1>&6
-  [ "${FORCE}" = yes ] || return 0
+  [ "${O_FORCE}" = yes ] || return 0
 
   "${@}" || exit "${?}"
 }

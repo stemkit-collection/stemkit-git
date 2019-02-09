@@ -5,23 +5,22 @@
 CORE_SH_LIB=core.sh.lib
 
 main () {
-  FORCE=yes
-  FOLDER=.
+  unset O_FOLDER
 
+  disable_simulation_mode
   parse_command_line "${@}"
 }
 
 process_parameters () {
   setup_git_environment
 
-  folder=`full_folder_path "${FOLDER}"` || {
-    error "Not a folder" "\"${FOLDER}\""
+  folder=`full_folder_path "${O_FOLDER}"` || {
+    error "Not a folder" "\"${O_FOLDER}\""
     exit 2
   }
 
+  [ "${#}" -eq 0 ] && enable_simulation_mode
   info "Processing ${folder}"
-
-  [ "${#}" -eq 0 ] && unset FORCE
 
   find "${folder}" -type d -exec test -d {}/.git \; -prune -exec test -f "{}/scripts/${CORE_SH_LIB}" \; -print | {
     while read folder; do
@@ -36,7 +35,7 @@ process_option () {
 
   case "${option}" in
     --directory | -d )
-      FOLDER="${argument}"
+      O_FOLDER="${argument}"
       return 4
     ;;
 
