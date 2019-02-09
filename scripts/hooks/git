@@ -3,7 +3,7 @@
 # Author: Gennady Bystritsky (bystr@mac.com)
 
 main () {
-  disable_simulation_mode
+  disable_dry_run
   setup_git_environment
 
   __git_exec__=exec

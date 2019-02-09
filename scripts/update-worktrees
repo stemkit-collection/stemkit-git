@@ -12,14 +12,14 @@ main () {
   setup_git_environment
 
   ensure_git_workspace
-  report_simulation_mode
+  report_dry_run
 
   [ "${REMOTE}" = yes ] && {
     run git remote update --prune
-    ensure_simulation_mode
+    ensure_dry_run
   }
 
-  is_simulation_mode && {
+  is_dry_run && {
     MERGE=yes
     PUSH=yes
   }
@@ -69,7 +69,7 @@ sync_branch () {
     ensure_no_local_changes || {
       number=`make_number_label "${?}"`
 
-      is_simulation_mode && [ "${EXPLICIT_PUSH}" = no ] && {
+      is_dry_run && [ "${EXPLICIT_PUSH}" = no ] && {
         warning 'Specify option --push (-p) for push action at normal run'
         EXPLICIT_PUSH=yes # just to print the above message once
       }
@@ -142,7 +142,7 @@ process_option () {
   case "${option}" in
     --remote | -r )
       REMOTE=yes
-      disable_simulation_mode
+      disable_dry_run
     ;;
 
     --push | -p )

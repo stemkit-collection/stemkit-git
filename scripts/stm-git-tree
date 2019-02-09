@@ -7,7 +7,7 @@ CORE_SH_LIB=core.sh.lib
 main () {
   unset O_FOLDER
 
-  disable_simulation_mode
+  disable_dry_run
   parse_command_line "${@}"
 }
 
@@ -19,7 +19,7 @@ process_parameters () {
     exit 2
   }
 
-  [ "${#}" -eq 0 ] && enable_simulation_mode
+  [ "${#}" -eq 0 ] && enable_dry_run
   info "Processing ${folder}"
 
   find "${folder}" -type d -exec test -d {}/.git \; -prune -exec test -f "{}/scripts/${CORE_SH_LIB}" \; -print | {

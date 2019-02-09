@@ -19,11 +19,11 @@
 #   standard_options_usage
 #   usage_and_exit <exit-code> [ <error-message> ]
 #
-#   report_simulation_mode
-#   ensure_simulation_mode
-#   is_simulation_mode
-#   enable_simulation_mode
-#   disable_simulation_mode
+#   report_dry_run
+#   ensure_dry_run
+#   is_dry_run
+#   enable_dry_run
+#   disable_dry_run
 #
 #   run <command-line>
 #   indent_output_from <command-line>
@@ -55,11 +55,11 @@ process_standard_option () {
 
   case "${option}" in
     --force | -f )
-      disable_simulation_mode
+      disable_dry_run
     ;;
 
     --dry-run | -n )
-      enable_simulation_mode
+      enable_dry_run
     ;;
 
     --quiet | -q )
@@ -127,26 +127,26 @@ parse_command_line () {
   process_parameters "${@}" || usage_and_exit 2 'Superfluous parameters' "${*}"
 }
 
-report_simulation_mode () {
+report_dry_run () {
   [ "${FORCE}" = yes ] || info "Simulation mode (dry-run), use --force for normal run"
 }
 
-ensure_simulation_mode () {
+ensure_dry_run () {
   [ "${FORCE}" = yes ] && {
     info "Switching to simulation mode (dry-run)"
     unset FORCE
   }
 }
 
-is_simulation_mode () {
+is_dry_run () {
   test "${FORCE}" != yes
 }
 
-enable_simulation_mode () {
+enable_dry_run () {
   unset FORCE
 }
 
-disable_simulation_mode () {
+disable_dry_run () {
   FORCE=yes
 }
 

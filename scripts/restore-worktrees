@@ -16,7 +16,7 @@ main () {
   setup_git_environment
 
   ensure_git_workspace
-  report_simulation_mode
+  report_dry_run
 
   run git worktree prune
 
