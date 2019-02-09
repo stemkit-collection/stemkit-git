@@ -22,6 +22,7 @@
 #   report_dry_run
 #   ensure_dry_run
 #   is_dry_run
+#   is_explicit_runmode
 #   enable_dry_run
 #   disable_dry_run
 #
@@ -55,10 +56,12 @@ process_standard_option () {
 
   case "${option}" in
     --force | -f )
+      V_CORE_RUNMODE=force
       disable_dry_run
     ;;
 
     --dry-run | -n )
+      V_CORE_RUNMODE=dryrun
       enable_dry_run
     ;;
 
@@ -128,26 +131,41 @@ parse_command_line () {
 }
 
 report_dry_run () {
-  [ "${FORCE}" = yes ] || info "Simulation mode (dry-run), use --force for normal run"
+  is_dry_run || {
+    return
+  }
+  report="Simulation mode (dry-run)"
+
+  is_explicit_runmode || {
+    report="${report}, use --force for normal run"
+  }
+
+  info "${report}"
 }
 
 ensure_dry_run () {
-  [ "${FORCE}" = yes ] && {
+  is_dry_run || {
     info "Switching to simulation mode (dry-run)"
-    unset FORCE
+    enable_dry_run
   }
 }
 
+is_explicit_runmode () {
+  test "${V_CORE_RUNMODE:+set}" = set
+}
+
 is_dry_run () {
-  test "${FORCE}" != yes
+  test "${V_CORE_DRYRUN}" = yes
 }
 
 enable_dry_run () {
-  unset FORCE
+  V_CORE_DRYRUN=yes
+  V_CORE_RUN_MARKER='##'
 }
 
 disable_dry_run () {
-  FORCE=yes
+  V_CORE_DRYRUN=no
+  V_CORE_RUN_MARKER='=='
 }
 
 usage_and_exit () {
@@ -167,11 +185,8 @@ invoke_if_function () {
 }
 
 run () {
-  marker="${FORCE:+==}"
-  output 6 "${marker:-##} ${@}"
-
-  [ "${FORCE}" = yes ] || return 0
-  "${@}"
+  output 6 "${V_CORE_RUN_MARKER} ${@}"
+  is_dry_run || "${@}"
 }
 
 indent_output_from () {
@@ -278,6 +293,9 @@ start () {
     ;;
   esac
 
+  unset V_CORE_RUNMODE
+  enable_dry_run
+
   main "${@}"
 }
 
@@ -287,11 +305,8 @@ script_full_path=`full_prog_path "${0}"`
 script_folder=`dirname "${script_full_path}"`
 script_name=`basename "${script_full_path}"`
 
-unset FORCE
-
-DEBUG=no
-QUIET=no
 VERBOSE=no
+DEBUG=no
 
 contains_item "${script_name}" ${TRACE} && {
   DEBUG=yes

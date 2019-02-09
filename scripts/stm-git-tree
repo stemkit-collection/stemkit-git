@@ -49,5 +49,5 @@ options_usage () {
   echo "`standard_options_usage`[--directory|-d <folder>]"
 }
 
-. `type "${0}" | awk '{print $(NF)}' | xargs dirname`/"${CORE_SH_LIB}"
+. `type "${0}" | sed 's/^.* //' | xargs dirname`/core.sh.lib
 start import=git "${@}"

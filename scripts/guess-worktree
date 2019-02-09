@@ -141,5 +141,5 @@ options_usage () {
   echo "`standard_options_usage` [--top|-t][--list|-l][--safe|-s][<matcher>...]"
 }
 
-. `type "${0}" | awk '{print $(NF)}' | xargs dirname`/core.sh.lib
+. `type "${0}" | sed 's/^.* //' | xargs dirname`/core.sh.lib
 start import=git,ws "${@}"
