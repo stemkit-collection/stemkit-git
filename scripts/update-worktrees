@@ -37,7 +37,7 @@ main () {
     ensure_dry_run
   }
 
-  is_dry_run && {
+  is_dry_run || [ "${MERGE}" = no ] && [ "${PUSH}" = no ] && {
     MERGE=yes
     PUSH=yes
   }
@@ -95,9 +95,9 @@ sync_branch () {
 
   [ "${PUSH}" = yes ] && {
     ensure_no_local_changes || {
-      [ "${O_PUSH}" = yes ] || {
+      [ "${O_PUSH}" = yes ] || is_dry_run || {
+        warning 'Specify option --push (-p) to perform push action.'
         ensure_dry_run
-        warning 'Specify option --push (-p) for push action at normal run'
       }
 
       number=`make_number_label "${?}"`
