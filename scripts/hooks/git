@@ -10,5 +10,5 @@ main () {
   git "${@}"
 }
 
-. `type "${0}" | awk '{print $(NF)}' | xargs dirname`/../core.sh.lib
+. `type "${0}" | sed 's/^.* //' | xargs dirname`/../core.lib.sh
 start import=../git "${@}"

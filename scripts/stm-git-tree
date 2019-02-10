@@ -2,7 +2,7 @@
 # vim: ft=sh: sw=2:
 # Author: Gennady Bystritsky (bystr@mac.com)
 
-CORE_SH_LIB=core.sh.lib
+LOCATION_MARKER=scripts/hooks/../../config/dot-gitaliases
 
 main () {
   unset O_FOLDER
@@ -22,7 +22,7 @@ process_parameters () {
   [ "${#}" -eq 0 ] && enable_dry_run
   info "Processing ${folder}"
 
-  find "${folder}" -type d -exec test -d {}/.git \; -prune -exec test -f "{}/scripts/${CORE_SH_LIB}" \; -print | {
+  find "${folder}" -type d -exec test -d {}/.git \; -prune -exec test -f "{}/${LOCATION_MARKER}" \; -print | {
     while read folder; do
       run git -C "${folder}" "${@}"
     done
@@ -49,5 +49,5 @@ options_usage () {
   echo "`standard_options_usage`[--directory|-d <folder>]"
 }
 
-. `type "${0}" | sed 's/^.* //' | xargs dirname`/core.sh.lib
+. `type "${0}" | sed 's/^.* //' | xargs dirname`/core.lib.sh
 start import=git "${@}"

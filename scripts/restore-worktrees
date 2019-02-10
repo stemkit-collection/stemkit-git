@@ -103,5 +103,5 @@ extra_usage_info () {
   output 2 "  git config --local --replace-all \"${GIT_CONFIG_P_OFFSET}\" \"${DEFAULT_OFFSET}\""
 }
 
-. `type "${0}" | sed 's/^.* //' | xargs dirname`/core.sh.lib
+. `type "${0}" | sed 's/^.* //' | xargs dirname`/core.lib.sh
 start import=git,ws "${@}"
