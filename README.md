@@ -12,6 +12,10 @@ that would invoke the script directly from GitHub:
 
     repo=https://raw.github.com/stemkit-collection/stemkit-git
     curl -sL "${repo}/master/scripts/make-workspace" | sh -s -- -f ~/projects/workspace
+    
+Or for easier copy-paste:
+
+> `curl -sL "https://raw.github.com/stemkit-collection/stemkit-git/master/scripts/make-workspace" | sh -s -- -f ~/projects/workspace`
 
 ## Using the branch
 
