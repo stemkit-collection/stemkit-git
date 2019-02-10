@@ -27,6 +27,7 @@
 #   disable_dry_run
 #
 #   run <command-line>
+#   run_dangerous <command-line>
 #   indent_output_from <command-line>
 #
 #   log <level-label> <message>
