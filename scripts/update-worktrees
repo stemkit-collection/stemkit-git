@@ -15,15 +15,14 @@ main () {
 
   restore_dry_run=no
 
-  [ "${REMOTE}" = yes ] && {
-    is_dry_run && {
-      is_explicit_runmode || {
-        [ "${MERGE}" = no ] && [ "${PUSH}" = no ] && {
-          restore_dry_run=yes
-        }
+  is_dry_run && is_explicit_runmode || {
+    [ "${MERGE}" = no ] && [ "${PUSH}" = no ] || {
+      disable_dry_run
+    }
 
-        disable_dry_run
-      }
+    is_dry_run && [ "${REMOTE}" = yes ] && {
+      restore_dry_run=yes
+      disable_dry_run
     }
   }
 
