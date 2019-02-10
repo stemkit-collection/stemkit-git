@@ -7,7 +7,11 @@ different product branches checking them out in dedictated subfolders.
 
 ### Quick workspace creation
 
-    curl -sL https://raw.github.com/stemkit-collection/stemkit-git/master/scripts/make-workspace | sh -s -- -f <local-repository-folder>
+To create a workspace in `~/projects/workspace`, use the following commands
+that would invoke the script directly from GitHub:
+
+    repo=https://raw.github.com/stemkit-collection/stemkit-git
+    curl -sL "${repo}/master/scripts/make-workspace" | sh -s -- -f ~/projects/workspace
 
 ## Using the branch
 
