@@ -6,8 +6,8 @@
 #       . `type "${0}" | sed 's/^.* //' | xargs dirname`/core.lib.sh
 #       start import=ws[,<library>]... "${@}"
 
-report_ws_sh_lib_found () {
-  debug "ws.sh.lib" "${script_full_path}" "${*}"
+report_ws_lib_sh_found () {
+  debug "ws.lib.sh" "${script_full_path}" "${*}"
 }
 
 ensure_git_workspace () {

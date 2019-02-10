@@ -272,7 +272,7 @@ full_prog_path () {
 
 import () {
   for item in "${@}"; do
-    item="${script_folder}/${item}.sh.lib"
+    item="${script_folder}/${item}.lib.sh"
 
     [ -f "${item}" ] || {
       error 'No library' "${item}"
