@@ -56,12 +56,12 @@ process_standard_option () {
 
   case "${option}" in
     --force | -f )
-      V_CORE_RUNMODE=force
+      V_CORE_RUN_MODE=force
       disable_dry_run
     ;;
 
     --dry-run | -n )
-      V_CORE_RUNMODE=dryrun
+      V_CORE_RUN_MODE=dryrun
       enable_dry_run
     ;;
 
@@ -151,7 +151,7 @@ ensure_dry_run () {
 }
 
 is_explicit_runmode () {
-  test "${V_CORE_RUNMODE:+set}" = set
+  test "${V_CORE_RUN_MODE:+set}" = set
 }
 
 is_dry_run () {
@@ -187,6 +187,14 @@ invoke_if_function () {
 run () {
   output 6 "${V_CORE_RUN_MARKER} ${@}"
   is_dry_run || "${@}"
+}
+
+run_dangerous () {
+  output 6 "${V_CORE_RUN_MARKER} ${@}"
+
+  is_dry_run || {
+    ${V_CORE_SAFE_RUN:+output 6 "[SAFE-RUN]"} "${@}"
+  }
 }
 
 indent_output_from () {
@@ -293,7 +301,7 @@ start () {
     ;;
   esac
 
-  unset V_CORE_RUNMODE
+  unset V_CORE_RUN_MODE
   enable_dry_run
 
   main "${@}"
@@ -310,4 +318,9 @@ DEBUG=no
 
 contains_item "${script_name}" ${TRACE} && {
   DEBUG=yes
+}
+
+unset V_CORE_SAFE_RUN
+contains_item "${script_name}" ${SAFE_RUN} && {
+  V_CORE_SAFE_RUN=yes
 }
