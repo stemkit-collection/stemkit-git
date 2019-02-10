@@ -6,8 +6,8 @@
 #       . `type "${0}" | sed 's/^.* //' | xargs dirname`/core.lib.sh
 #       start import=git[,<library>]... "${@}"
 
-report_git_sh_lib_found () {
-  debug "git.sh.lib" "${script_full_path}" "${*}"
+report_git_lib_sh_found () {
+  debug "git.lib.sh" "${script_full_path}" "${*}"
 }
 
 setup_git_environment () {
