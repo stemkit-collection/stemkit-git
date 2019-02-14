@@ -66,6 +66,7 @@ main () {
 
   run git remote add "${origin}" "${REMOTE}"
   run git remote update
+  run git config --replace-all core.symlinks true
 
   run git checkout -b "${branch}" "${origin}/master"
   unset CLEANUP_LIST
