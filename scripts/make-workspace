@@ -2,41 +2,57 @@
 # vim: ft=sh: sw=2:
 # Author: Gennady Bystritsky (bystr@mac.com)
 
-REMOTE="https://github.com/stemkit-collection/stemkit-git.git"
-ORIGIN="remote-gh-stm-git"
-BRANCH="workspace"
+REPO_STM_GIT="https://github.com/stemkit-collection/stemkit-git.git"
+REPO_TSC_TPM="https://github.com/tsc-collection/tsc-tpm.git"
+REPO_STM_UTIL="https://github.com/stemkit-collection/stemkit-util.git"
 
-unset O_FORCE O_BRANCH O_ORIGIN
+REMOTE_STM_GIT="remote-gh-stm-git"
+REMOTE_TSC_TPM="remote-gh-tsc-tpm"
+REMOTE_STM_UTIL="remote-gh-stm-util"
+
+BRANCH_STM_GIT="workspace"
+BRANCH_TSC_TPM="tsc-tpm"
+BRANCH_STM_UTIL="stm-util"
+
+RUNTIME_OFFSET="default"
+
+unset O_FORCE O_RUNTIME
 unset CLEANUP_LIST
 
 main () {
-  while getopts ":hfb:o:" option; do
-    case "${option}" in
-      h)
+  while [ "${#}" -ne 0 ]; do
+    case "${1}" in
+      -h | --help)
         usage_and_exit
       ;;
 
-      f)
+      -f | --force)
         O_FORCE=yes
       ;;
 
-      b)
-        O_BRANCH="${OPTARG}"
+      -r | --runtime)
+        O_RUNTIME=yes
       ;;
 
-      o)
-        O_ORIGIN="${OPTARG}"
+      -- )
+        break
+      ;;
+
+      -*)
+        echo "ERROR: Unknown option: ${1}" 1>&6
+        usage_and_exit 2
       ;;
 
       *)
-        usage_and_exit 2
+        break
       ;;
     esac
+
+    shift
   done
 
-  shift `expr "${OPTIND}" - 1`
   [ "${#}" -ne 1 ] && {
-    echo "ERROR: Folder for local repository not specified."
+    echo "ERROR: Folder for local repository not specified" 1>&6
     usage_and_exit 3
   }
 
@@ -45,7 +61,7 @@ main () {
   [ "${O_FORCE}" = yes ] || {
     banner "
       |
-      | FYI: Simulation mode (dry-run), use opton -f for normal run
+      | FYI: Simulation mode (dry-run), use opton --force for normal run
       |"
 
     MARKER='##'
@@ -55,20 +71,34 @@ main () {
   run cd "${1}" 1>&5
 
   [ "${O_FORCE}" = yes ] && {
-    CLEANUP_LIST=`pwd`
+    FOLDER_TOP=`pwd`
+    FOLDER_ROOT=`dirname "${FOLDER_TOP}"`
+
+    CLEANUP_LIST="${FOLDER_TOP}"
     trap cleanup 0 2 15
+  }
+
+  [ "${O_RUNTIME}" = yes ] && {
+    run mkdir "${RUNTIME_OFFSET}"
+    run cd "${RUNTIME_OFFSET}" 1>&5
   }
 
   run git init .
 
-  branch="${O_BRANCH:-${BRANCH}}"
-  origin="${O_ORIGIN:-${ORIGIN}}"
+  run git remote add "${REMOTE_STM_GIT}" "${REPO_STM_GIT}"
+  run git config --local --replace-all core.symlinks true
 
-  run git remote add "${origin}" "${REMOTE}"
+  [ "${O_RUNTIME}" = yes ] && {
+    run git remote add "${REMOTE_STM_UTIL}" "${REPO_STM_UTIL}"
+    run git remote add "${REMOTE_TSC_TPM}" "${REPO_TSC_TPM}"
+
+    run git config --local --replace-all "stm.workspace.directory" "../.."
+    run git config --local --replace-all "stm.workspace.offset" "${RUNTIME_OFFSET}"
+  }
+
   run git remote update
-  run git config --replace-all core.symlinks true
 
-  run git checkout -b "${branch}" "${origin}/master"
+  run git checkout -b "${BRANCH_STM_GIT}" "${REMOTE_STM_GIT}/master"
   unset CLEANUP_LIST
 
   [ "${O_FORCE}" = yes ] && {
@@ -88,6 +118,30 @@ main () {
       |
       | $ git config --global --add include.path `pwd`/config/dot-gitconfig
       |"
+
+      [ "${O_RUNTIME}" = yes ] && {
+        FOLDER_TSC_TPM="${FOLDER_ROOT}/${BRANCH_TSC_TPM}"
+        FOLDER_STM_UTIL="${FOLDER_ROOT}/${BRANCH_STM_UTIL}"
+
+        banner "
+          | To create branches for tsc-tpm and stemkit-util, please run the
+          | following commans which will create folders ${BRANCH_TSC_TPM}
+          | and "${BRANCH_STM_UTIL}" on specified folder's level:
+          |
+          | $ cd `pwd`
+          |
+          | $ git branch \"${BRANCH_TSC_TPM}\" \"${REMOTE_TSC_TPM}/master\"
+          | $ git branch \"${BRANCH_STM_UTIL}\" \"${REMOTE_STM_UTIL}/master\"
+          |
+          | $ ./scripts/restore-worktrees --force
+          |"
+
+        for folder in "${FOLDER_TSC_TPM}" "${FOLDER_STM_UTIL}"; do
+          [ -e "${folder}" ] && {
+            echo "WARNING: Path \"${folder}\" exists!" 1>&6
+          }
+        done
+      }
   }
 }
 
@@ -111,11 +165,13 @@ run () {
 usage_and_exit () {
   banner "
     |
-    | USAGE: ${script_name} [-h][-f][-b <branch>][-o <origin>] <folder-to-create>
+    | USAGE: ${script_name} [-h | --help][-f | --force][-r | --runtime] [--] <folder-to-create>
     |
-    | Default values:
-    |     branch => \"${BRANCH}\"
-    |     origin => \"${ORIGIN}\"
+    | Option --runtime will cause creation of so called \"runtime\" layout
+    | for referencing from a user's shell startup (e.g., ~/.profile):
+    |   o Additional folder level \"${RUNTIME_OFFSET}\"
+    |   o Remotes for tsc-tpm and stemkit-util
+    |   o Work trees for branches on the spedified folder's level
     |"
 
   exit "${1:-0}"
