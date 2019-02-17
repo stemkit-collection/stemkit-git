@@ -17,7 +17,7 @@ setup_git_environment () {
   #
   unset GIT_DIR
 
-  git gfb-aliases-available 2>&5 || {
+  git stm-aliases-available 2>&5 || {
     git () {
       __trace__ ${__git_exec__} "${SK_GIT_REAL:?}" -c include.path="${SK_GIT_LOADER:?}" "${@}"
     }

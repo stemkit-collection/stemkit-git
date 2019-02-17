@@ -1,27 +1,30 @@
 # vim: ft=gitconfig: sw=4:
 #
 [alias]
-    gfb-aliases-available = ! true
-    aa = ! ${git:-git} config --list | ruby -ne 'scan(%r{^alias[.](.*?)\\s*=\\s*(.*)$}){|a,c|puts %q{%-4s -> %s}%[a,c]}'
+    stm-aliases-available = ! true
+    check-stm-master = ! ${git:-git} master-workspace | xargs -I{} ${git:-git} -C {} workspace | xargs echo 'Master workspace:'
 
-    bn = ! bn=`${git:-git} rev-parse --abbrev-ref --revs-only \"${1:-HEAD}\" --` && echo ${bn:-${1}} "#"
-    branch-name = ! ${git:-git} bn
+    print-aliases = ! ${git:-git} config --list | ruby -ne 'scan(%r{^alias[.](.*?)\\s*=\\s*(.*)$}){|a,c|puts %q{%-4s -> %s}%[a,c]}'
+    aa = ! ${git:-git} print-aliases
 
-    bsl = ! echo branch:start: "#"
-    branch-start-label = ! ${git:-git} bsl
+    branch-name = ! bn=`${git:-git} rev-parse --abbrev-ref --revs-only \"${1:-HEAD}\" --` && echo ${bn:-${1}} "#"
+    bn = ! ${git:-git} branch-name
 
-    bsm = ! bn=\"${1:-`${git:-git} bn`}\" && echo \"`${git:-git} bsl`${bn}\" "#"
-    branch-start-message = ! ${git:-git} bsm
+    branch-start-label = ! echo branch:start: "#"
+    bsl = ! ${git:-git} branch-start-label
+
+    branch-start-message = ! bn=\"${1:-`${git:-git} branch-name`}\" && echo \"`${git:-git} branch-start-label`${bn}\" "#"
+    bsm = ! ${git:-git} branch-start-message
 
     ensure-not-staged = ! ${git:-git} diff --staged --exit-code --name-status || (echo ERROR: Content found staged for commit, please reset. 1>&2 && false) "#"
-    mark-branch-start = ! ${git:-git} ensure-not-staged && bsm=`${git:-git} bsm \"${@}\"` && ${git:-git} commit --allow-empty -m \"${bsm}\" "#"
+    mark-branch-start = ! ${git:-git} ensure-not-staged && bsm=`${git:-git} branch-start-message \"${@}\"` && ${git:-git} commit --allow-empty -m \"${bsm}\" "#"
 
-    make-branch = ! ${git:-git} checkout -b \"${1}\" \"${2:-HEAD}\" && bsm=`${git:-git} bsm \"${1}\"` && ${git:-git} commit --allow-empty -m \"${bsm}\" "#"
+    make-branch = ! ${git:-git} checkout -b \"${1}\" \"${2:-HEAD}\" && bsm=`${git:-git} branch-start-message \"${1}\"` && ${git:-git} commit --allow-empty -m \"${bsm}\" "#"
 
-    brs = ! bn=\"${1:-`${git:-git} bn`}\" && bsl=`${git:-git} bsl` && ${git:-git} rev-list -1 --first-parent --grep \"^${bsl}\" \"${bn}\" -- "#"
+    brs = ! bn=\"${1:-`${git:-git} branch-name`}\" && bsl=`${git:-git} branch-start-label` && ${git:-git} rev-list -1 --first-parent --grep \"^${bsl}\" \"${bn}\" -- "#"
     branch-rev-start = ! ${git:-git} brs
 
-    brr = ! bn=`${git:-git} bn ${1}` && brs=`${git:-git} brs \"${bn}\"` && (([ -z \"${brs}\" ] && echo ${bn}) || echo ${brs}~1..${bn}) "#"
+    brr = ! bn=`${git:-git} branch-name ${1}` && brs=`${git:-git} brs \"${bn}\"` && (([ -z \"${brs}\" ] && echo ${bn}) || echo ${brs}~1..${bn}) "#"
     branch-rev-range = ! ${git:-git} brr
 
     launch-in = ! e=`${git:-git} -C \"${1}\" rev-parse --local-env-vars` && unset ${e} && ${git:-git} -C
