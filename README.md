@@ -35,8 +35,7 @@ Or for easier copy-paste:
 
 > `echo https://raw.github.com/stemkit-collection/stemkit-git | xargs -I% curl
 > -sL %/master/scripts/make-workspace | sh -s -- -f ~/projects/workspace`
-
-> > ##### _NOTE_: To simply print what commands would be executed without actually executing them, please omit option `-f` from the command line above.
+> > ##### _NOTE_: To simply print what Git commands would be executed internally without having them actually executed, please omit option `-f` from the command line above.
 
 This command will create a local Git repository in the specified folder with
 one remote named `remote-gh-stm-git` referencing repository
