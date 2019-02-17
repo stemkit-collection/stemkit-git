@@ -1,8 +1,5 @@
 # vim: ft=gitconfig: sw=4:
 #
-[user]
-    name = Doe, John
-    email = john.doe@acme.com
 
 [diff]
     renames = copy
