@@ -35,7 +35,7 @@ Or for easier copy-paste:
 
 > `echo https://raw.github.com/stemkit-collection/stemkit-git | xargs -I% curl
 > -sL %/master/scripts/make-workspace | sh -s -- -f ~/projects/workspace`
-> > ##### _NOTE_: To simply print what Git commands would be executed internally without having them actually executed, please omit option `-f` from the command line above.
+> > ##### _NOTE:_ To simply print what Git commands would be executed internally without having them actually executed, please omit option `-f` from the command line above.
 
 This command will create a local Git repository in the specified folder with
 one remote named `remote-gh-stm-git` referencing repository
@@ -45,7 +45,7 @@ area will have a single branch named `workspace` tracking remote branch
 `git clone -o remote-gh-stm-git ...` would do, the only difference
 being the local branch called `workspace` instead of `master`.
 
-> ##### _FYI_: You may pick any other folder name for the locaiton of your repository instead of `~/projects/workspace`, the main branch will still be named `workspace` (you may rename it later if desired)
+> ##### _FYI:_ You may pick any other folder name for the locaiton of your repository instead of `~/projects/workspace`, the main branch will still be named `workspace` (you may rename it later if desired)
 
 The last step in setup is to modify your `~/.gitconfig` file to make your Git
 aware of the features provided by this facility (unless you've already done it
