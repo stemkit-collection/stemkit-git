@@ -20,8 +20,8 @@ provided config file into your `~/.gitconfig`. Additionally, you may inclue
 the facility's script folder into your `PATH` variable for even more value.
 
 First thing first, let's create a workspace. All the examples here assume
-that folder `~/projects` exists, otherwise please create it manually before
-trying the commands below.
+that folder `~/projects` exists, otherwise please create it manually or use
+another location for your local repository before trying the commands below.
 
 ### Quick workspace creation
 
@@ -36,9 +36,7 @@ Or for easier copy-paste:
 > `echo https://raw.github.com/stemkit-collection/stemkit-git | xargs -I% curl
 > -sL %/master/scripts/make-workspace | sh -s -- -f ~/projects/workspace`
 
-> > __NOTE__: _To simply print what commands would be executed without
-> > actually executing them, please omit option `-f` from the command
-> > line above._
+> > ##### _NOTE_: To simply print what commands would be executed without actually executing them, please omit option `-f` from the command line above.
 
 This command will create a local Git repository in the specified folder with
 one remote named `remote-gh-stm-git` referencing repository
@@ -48,4 +46,22 @@ area will have a single branch named `workspace` tracking remote branch
 `git clone -o remote-gh-stm-git ...` would do, the only difference
 being the local branch called `workspace` instead of `master`.
 
+> ##### _FYI_: You may pick any other folder name for the locaiton of your repository instead of `~/projects/workspace`, the main branch will still be named `workspace` (you may rename it later if desired)
+
+The last step in setup is to modify your `~/.gitconfig` file to make your Git
+aware of the features provided by this facility (unless you've already done it
+for another workspace).
+
+The easiest way to achieve this would be to issue the following command:
+
     git config --global --add include.path projects/workspace/config/dot-gitconfig
+
+You are done! To make sure that everything works as expected please run the
+following command and observe its output:
+
+    $ git check-stm-master && echo SUCCESS
+    Master workspace: <your-home-folder>/projects/workspace
+    SUCCESS
+
+Any other outcome would mean that something went wrong, in which case please
+check the troubleshooting section (when available) or contact the author.
