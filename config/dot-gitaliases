@@ -47,7 +47,7 @@
     date-param = ! echo --date=\"format-local:%F %T\"
 
     log-date-as = ! sh -c '${git:-git} launch-in \"${GIT_PREFIX}\" ${__sk_visualize_sk__} log \"`${git:-git} date-param`\" --pretty=tformat:\"%C(auto)${0}\" \"${@}\" --'
-    log-with-header = ! sh -c '${git:-git} launch-in \"${GIT_PREFIX}\" log-date-as \"`printf %78s|sed s/./-/g`%+D%+h (%p) | `${git:-git} log-name %cN` | %cd (%cr) ${0}\" \"${@}\"'
+    log-with-header = ! sh -c '${git:-git} launch-in \"${GIT_PREFIX}\" log-date-as \"`printf %78s|sed s/./-/g`%+D%+h (%p) | `${git:-git} log-name \"%cN <%cE>\"` | %cd (%cr) ${0}\" \"${@}\"'
 
     labeled-rev-parse-show = ! s=`${git:-git} launch-in \"${1}\" rev-parse --show-${2}` c=${?} sh -c "'echo ${3} ${s:-./}; exit ${c}'" --
 
