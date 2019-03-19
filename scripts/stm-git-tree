@@ -25,6 +25,8 @@ process_parameters () {
   find_workspaces "${folder}" | while read folder; do
     run git -C "${folder}" "${@}"
   done
+
+  return 0
 }
 
 find_workspaces () {
