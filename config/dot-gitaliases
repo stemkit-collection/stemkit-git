@@ -4,7 +4,7 @@
     stm-aliases-available = ! true
     check-stm-master = ! ${git:-git} master-workspace | xargs -I{} ${git:-git} -C {} workspace | xargs echo 'Master workspace:'
 
-    print-aliases = ! ${git:-git} config --list | ruby -ne 'scan(%r{^alias[.](.*?)\\s*=\\s*(.*)$}){|a,c|puts %q{%-4s -> %s}%[a,c]}'
+    print-aliases = ! ${git:-git} config --list | ruby -ne '$_.scan(%r{^alias[.](.*?)\\s*=\\s*(.*)$}){|a,c|puts %q{%-4s -> %s}%[a,c]}'
     aa = ! ${git:-git} print-aliases
 
     branch-name = ! bn=`${git:-git} rev-parse --abbrev-ref --revs-only \"${1:-HEAD}\" --` && echo ${bn:-${1}} "#"
@@ -135,8 +135,8 @@
 
     who = ! ${git:-git} launch-in \"${GIT_PREFIX}\" ${__sk_visualize_sk__} blame \"`${git:-git} date-param \\|`\" \"${@}\" | ruby -pe 'gsub(%r{^(\\S+) .*?\\((.*)$}, %q{\\1 \\2})' | \"${PAGER:-cat}\" "#"
 
-    bbs  = ! ${git:-git} bb -vv --color \"${@}\" | ruby -ne 'scan(%r{^([*]?\\s*\\S+.*?)\\S+\\s+\\[([^\\]:]*?) *: *([^\\]:]*?)\\]}){|b,r,s|puts %q{%s %-12s %s}%[b,s,r]}' "#"
-    bbb = ! ${git:-git} bbs --no-color | ruby -ne "'puts scan(%r{^[*\\s]*(\\S+)})'" "#"
+    bbs  = ! ${git:-git} bb -vv --color \"${@}\" | ruby -ne '$_.scan(%r{^([*]?\\s*\\S+.*?)\\S+\\s+\\[([^\\]:]*?) *: *([^\\]:]*?)\\]}){|b,r,s|puts %q{%s %-12s %s}%[b,s,r]}' "#"
+    bbb = ! ${git:-git} bbs --no-color | ruby -ne "'puts $_.scan(%r{^[*\\s]*(\\S+)})'" "#"
     bbc  = ! ${git:-git} branch -vv --color | grep '^[*] '
 
     branch-remote-owner = ! git branch -r --list ${1:+${1}/*} | xargs -I\"{}\" git log-date-as \"%h %cd `git log-name-trunc %cN` {}\" \"{}\" --color -1 "#"
