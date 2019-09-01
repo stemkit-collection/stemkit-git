@@ -15,14 +15,18 @@
     lv = log --pretty=more --name-status
     ln = ls --name-status
     lr = ln --relative
-    lp = ls -p
+
+    lp  = ls -p
+    lpw = lp --color-words
 
     llf = ll --first-parent
     lsf = ls --first-parent
     lvf = lv --first-parent
     lnf = ln --first-parent
     lrf = lr --first-parent
-    lpf = lp --first-parent
+
+    lpf  = lp --first-parent
+    lpwf = lpw --first-parent
 
     llg = ll --graph
 
@@ -39,3 +43,12 @@
     bbv = bb -vv
 
     who = blame
+
+    ww  = worktree
+    wwl = ww list
+    wwa = ww add
+    wwp = ww prune
+
+    svn-pull  = svn rebase
+    svn-push  = svn dcommit
+    svn-clone = svn clone
