@@ -2,7 +2,7 @@
 # vim: ft=sh: sw=2:
 # Author: Gennady Bystritsky (bystr@mac.com)
 
-LOCATION_MARKER=scripts/hooks/../../config/dot-gitaliases
+LOCATION_MARKER=scripts/hooks/../../config/dot-gitloader
 
 main () {
   unset O_FOLDER

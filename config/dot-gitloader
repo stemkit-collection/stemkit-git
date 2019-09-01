@@ -1,8 +1,10 @@
 # vim: ft=gitconfig: sw=4:
 #
-# We use this intermediate file for loading dot-gitaliases to be able to
+# We use this intermediate file for loading aliases-workspace.gitconfig to be able to
 # address both loading by including dot-gitconfig from ~/.gitconfig as
 # well as when scripts/hook/git gets used.
 #
+
 [include]
-    path = dot-gitaliases
+    path = defaults.gitconfig
+    path = aliases-workspace.gitconfig

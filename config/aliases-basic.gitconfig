@@ -1,0 +1,41 @@
+# vim: ft=gitconfig: sw=4:
+#
+
+[alias]
+    ca = commit -a
+    co = checkout
+
+    ss = status -s
+    sb = ss --branch
+    su = ss --untracked-files=all
+    si = ss --ignored
+
+    ll = log --pretty=line
+    ls = log --pretty=some
+    lv = log --pretty=more --name-status
+    ln = ls --name-status
+    lr = ln --relative
+    lp = ls -p
+
+    llf = ll --first-parent
+    lsf = ls --first-parent
+    lvf = lv --first-parent
+    lnf = ln --first-parent
+    lrf = lr --first-parent
+    lpf = lp --first-parent
+
+    llg = ll --graph
+
+    dd = diff
+    ds = dd --staged
+    dn = dd --name-status
+    dr = dn --relative
+
+    ddw = dd --color-words
+    dsw = ds --color-words
+
+    bb  = branch
+    bbr = bb -r --column=auto
+    bbv = bb -vv
+
+    who = blame

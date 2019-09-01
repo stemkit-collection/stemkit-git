@@ -1,8 +1,9 @@
 # vim: ft=gitconfig: sw=4:
 # A template for ${HOME}/.gitconfig, adjust accordingly.
 #
+
 [include]
-    path = projects/workspace/config/dot-gitconfig
+    path = projects/runtime/workspace/default/config/dot-gitloader
 
 [user]
     name = Doe, John

@@ -77,13 +77,13 @@ ensure_git_real () {
 
 ensure_git_loader () {
   figure_ws_root_unless_set "${SK_GIT_LOADER}" || return
-  aliases=`from_ws_root config/dot-gitloader`
+  loader=`from_ws_root config/dot-gitloader`
 
-  [ -f "${aliases}" ] && {
-    SK_GIT_LOADER=${aliases} export SK_GIT_LOADER
+  [ -f "${loader}" ] && {
+    SK_GIT_LOADER=${loader} export SK_GIT_LOADER
     return
   }
 
-  error "Missing git aliases" "${aliases:-'???'}"
+  error "Missing git loader" "${loader:-'???'}"
   exit 3
 }

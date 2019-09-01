@@ -39,6 +39,3 @@
 
 [push]
     default = upstream
-
-[include]
-    path = dot-gitloader
