@@ -29,16 +29,13 @@
 
     launch-in = "! e=`${git:-git} -C \"${1}\" rev-parse --local-env-vars` && unset ${e} && ${git:-git} -C"
 
-    ca = "! ${git:-git} launch-in \"${GIT_PREFIX}\" ${__sk_visualize_sk__} commit -a"
-    co = "! ${git:-git} launch-in \"${GIT_PREFIX}\" ${__sk_visualize_sk__} checkout"
+    ca = "! ${git:-git} launch-in \"${GIT_PREFIX}\" commit -a"
+    co = "! ${git:-git} launch-in \"${GIT_PREFIX}\" checkout"
 
-    ss = "! ${git:-git} launch-in \"${GIT_PREFIX}\" ${__sk_visualize_sk__} status -s"
+    ss = "! ${git:-git} launch-in \"${GIT_PREFIX}\" status -s"
     sb = "! ${git:-git} launch-in \"${GIT_PREFIX}\" ss --branch"
     su = "! ${git:-git} launch-in \"${GIT_PREFIX}\" ss --untracked-files=all"
     si = "! ${git:-git} launch-in \"${GIT_PREFIX}\" ss --ignored"
-
-    visualize = "! 1>&2 ruby -e \"puts ARGV.map{|s|s.gsub(%r{.*\\s.*},&:inspect)}.join(' ')\" -- git"
-    what = "! __sk_visualize_sk__=visualize ${git:-git} launch-in \"${GIT_PREFIX}\""
 
     labeled-rev-parse-show = "! s=`${git:-git} launch-in \"${1}\" rev-parse --show-${2}` c=${?} sh -c 'echo ${3} ${s:-./}; exit ${c}' --"
 
@@ -53,13 +50,12 @@
     mws = "! ${git:-git} master-workspace"
 
     replace-prefixes = "! p=`${git:-git} -C \"${GIT_PREFIX}\" to-top` sh -c '${git:-git} launch-in \"${GIT_PREFIX}\" \"${0}\" --src-prefix=${p} --dst-prefix=${p} \"${@}\"'"
-    log-visualizing = "! ${git:-git} launch-in \"${GIT_PREFIX}\" ${__sk_visualize_sk__} log"
 
-    ls   = "! ${git:-git} launch-in \"${GIT_PREFIX}\" log-visualizing --pretty=some"
+    ls   = "! ${git:-git} launch-in \"${GIT_PREFIX}\" log --pretty=some"
     ln   = "! ${git:-git} launch-in \"${GIT_PREFIX}\" ls --name-status"
     lr   = "! ${git:-git} launch-in \"${GIT_PREFIX}\" ln --relative"
-    lv   = "! ${git:-git} launch-in \"${GIT_PREFIX}\" log-visualizing --pretty=more --name-status"
-    ll   = "! ${git:-git} launch-in \"${GIT_PREFIX}\" log-visualizing --pretty=line"
+    lv   = "! ${git:-git} launch-in \"${GIT_PREFIX}\" log --pretty=more --name-status"
+    ll   = "! ${git:-git} launch-in \"${GIT_PREFIX}\" log --pretty=line"
 
     lp   = "! ${git:-git} launch-in \"${GIT_PREFIX}\" replace-prefixes ls -p"
     lpw  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" lp --color-words"
@@ -82,12 +78,12 @@
     lpb  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" lpf  `${git:-git} branch-rev-range \"${@}\"` #"
     lpwb = "! ${git:-git} launch-in \"${GIT_PREFIX}\" lpwf `${git:-git} branch-rev-range \"${@}\"` #"
 
-    lg   = "! ${git:-git} launch-in \"${GIT_PREFIX}\" log-visualizing --graph --oneline --decorate --all"
+    lg   = "! ${git:-git} launch-in \"${GIT_PREFIX}\" log --graph --oneline --decorate --all"
     llg  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" ll --graph"
 
-    dd   = ! sh -c '${git:-git} launch-in \"${GIT_PREFIX}\" replace-prefixes ${__sk_visualize_sk__} diff \"${@}\" --' --
+    dd   = ! sh -c '${git:-git} launch-in \"${GIT_PREFIX}\" replace-prefixes diff \"${@}\" --' --
     ds   = ! ${git:-git} launch-in \"${GIT_PREFIX}\" dd --staged
-    dn   = ! ${git:-git} launch-in \"${GIT_PREFIX}\" ${__sk_visualize_sk__} diff --name-status
+    dn   = ! ${git:-git} launch-in \"${GIT_PREFIX}\" diff --name-status
     dr   = ! ${git:-git} launch-in \"${GIT_PREFIX}\" dn --relative
 
     ddw  = ! ${git:-git} launch-in \"${GIT_PREFIX}\" dd --color-words
@@ -102,7 +98,7 @@
     tt   = ! find -L `pwd` -maxdepth 6 -name .git -exec dirname {} "';'" | ${git:-git} foreach-stdin-line
     wtt  = ! ${git:-git} run-script guess-worktree -lw | ${git:-git} foreach-stdin-line
 
-    run-script = ! mws=`${git:-git} mws` && ws=`${git:-git} ws` && cd \"${GIT_PREFIX:-.}\" >/dev/null && ${__sk_visualize_sk__:+echo} sh -c 'PATH='\""${ws}/scripts:${mws:+${mws}/scripts:}"\"'${PATH} \"${@}\"' --
+    run-script = ! mws=`${git:-git} mws` && ws=`${git:-git} ws` && cd \"${GIT_PREFIX:-.}\" >/dev/null && sh -c 'PATH='\""${ws}/scripts:${mws:+${mws}/scripts:}"\"'${PATH} \"${@}\"' --
 
     update-worktrees = ! ${git:-git} launch-in \"${GIT_PREFIX}\" run-script update-worktrees
     uu = ! ${git:-git} launch-in \"${GIT_PREFIX}\" update-worktrees
@@ -113,12 +109,12 @@
     guess-worktree = ! ${git:-git} launch-in \"${GIT_PREFIX}\" run-script guess-worktree
     gg = ! ${git:-git} launch-in \"${GIT_PREFIX}\" guess-worktree
 
-    ww  = ! ${git:-git} ${__sk_visualize_sk__} worktree
+    ww  = ! ${git:-git} worktree
     wwl = ! ${git:-git} ww list
     wwa = ! ${git:-git} ww add
     wwp = ! ${git:-git} ww prune
 
-    bb  = ! ${git:-git} ${__sk_visualize_sk__} branch
+    bb  = ! ${git:-git} branch
     bbr = ! ${git:-git} bb -r --column=auto
     bbv = ! ${git:-git} bb -vv
 
@@ -126,7 +122,7 @@
     bbb = ! ${git:-git} bbs --no-color | ruby -ne "'puts $_.scan(%r{^[*\\s]*(\\S+)})'" "#"
     bbc = ! ${git:-git} branch -vv --color | grep '^[*] '
 
-    who = "! ${git:-git} launch-in \"${GIT_PREFIX}\" ${__sk_visualize_sk__} blame"
+    who = "! ${git:-git} launch-in \"${GIT_PREFIX}\" blame"
 
     bro = "! git branch -r --list ${1:+\"*${1}*/*\"} | while read remote; do echo \"`git log -1 --color --pretty=meta \"${remote}\"` ${remote}\"; done #"
     branch-remote-owner = "! ${git:-git} bro"
