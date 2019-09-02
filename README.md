@@ -58,7 +58,7 @@ The easiest way to achieve this would be to issue the following command:
 You are done! To make sure that everything works as expected please run the
 following command and observe its output:
 
-    $ git check-stm-master && echo SUCCESS
+    $ git stm-check-master && echo SUCCESS
     Master workspace: <your-home-folder>/projects/workspace
     SUCCESS
 
