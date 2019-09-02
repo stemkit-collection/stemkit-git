@@ -5,31 +5,31 @@
     path = aliases-basic.gitconfig
 
 [alias]
-    stm-aliases-available = ! true
-    check-stm-master = ! ${git:-git} master-workspace | xargs -I{} ${git:-git} -C {} workspace | xargs echo 'Master workspace:'
+    stm-aliases-available = "! true"
+    check-stm-master = "! ${git:-git} master-workspace | xargs -I{} ${git:-git} -C {} workspace | xargs echo 'Master workspace:'"
 
-    print-aliases = ! ${git:-git} config --list | ruby -ne '$_.scan(%r{^alias[.](.*?)\\s*=\\s*(.*)$}){|a,c|puts %q{%-4s -> %s}%[a,c]}'
-    aa = ! ${git:-git} print-aliases
+    print-aliases = "! ${git:-git} config --list | ruby -ne '$_.scan(%r{^alias[.](.*?)\\s*=\\s*(.*)$}){|a,c|puts %q{%-4s -> %s}%[a,c]}' | \"${PAGER:-cat}\""
+    aa = "! ${git:-git} print-aliases"
 
-    branch-name = ! bn=`${git:-git} rev-parse --abbrev-ref --revs-only \"${1:-HEAD}\" --` && echo ${bn:-${1}} "#"
-    bn = ! ${git:-git} branch-name
+    branch-name = "! bn=`${git:-git} rev-parse --abbrev-ref --revs-only \"${1:-HEAD}\" --` && echo ${bn:-${1}} #"
+    bn = "! ${git:-git} branch-name"
 
-    branch-start-label = ! echo branch:start: "#"
-    bsl = ! ${git:-git} branch-start-label
+    branch-start-label = "! echo branch:start: #"
+    bsl = "! ${git:-git} branch-start-label"
 
-    branch-start-message = ! bn=\"${1:-`${git:-git} branch-name`}\" && echo \"`${git:-git} branch-start-label`${bn}\" "#"
-    bsm = ! ${git:-git} branch-start-message
+    bsm = "! bn=\"${1:-`${git:-git} branch-name`}\" && echo \"`${git:-git} branch-start-label`${bn}\" #"
+    branch-start-message = "! ${git:-git} bsm"
 
-    ensure-not-staged = ! ${git:-git} diff --staged --exit-code --name-status || (echo ERROR: Content found staged for commit, please reset. 1>&2 && false) "#"
-    mark-branch-start = ! ${git:-git} ensure-not-staged && bsm=`${git:-git} branch-start-message \"${@}\"` && ${git:-git} commit --allow-empty -m \"${bsm}\" "#"
+    ensure-not-staged = "! ${git:-git} diff --staged --exit-code --name-status || (echo ERROR: Content found staged for commit, please reset. 1>&2 && false) #"
+    mark-branch-start = "! ${git:-git} ensure-not-staged && bsm=`${git:-git} bsm \"${@}\"` && ${git:-git} commit --allow-empty -m \"${bsm}\" #"
 
-    make-branch = ! ${git:-git} checkout -b \"${1}\" \"${2:-HEAD}\" && bsm=`${git:-git} branch-start-message \"${1}\"` && ${git:-git} commit --allow-empty -m \"${bsm}\" "#"
+    make-branch = "! ${git:-git} checkout -b \"${1}\" \"${2:-HEAD}\" && bsm=`${git:-git} bsm \"${1}\"` && ${git:-git} commit --allow-empty -m \"${bsm}\" #"
 
-    brs = ! bn=\"${1:-`${git:-git} branch-name`}\" && bsl=`${git:-git} branch-start-label` && ${git:-git} rev-list -1 --first-parent --grep \"^${bsl}\" \"${bn}\" -- "#"
-    branch-rev-start = ! ${git:-git} brs
+    brs = "! bn=\"${1:-`${git:-git} branch-name`}\" && bsl=`${git:-git} branch-start-label` && ${git:-git} rev-list -1 --first-parent --grep \"^${bsl}\" \"${bn}\" -- #"
+    branch-rev-start = "! ${git:-git} brs"
 
-    brr = ! bn=`${git:-git} branch-name ${1}` && brs=`${git:-git} brs \"${bn}\"` && (([ -z \"${brs}\" ] && echo ${bn}) || echo ${brs}~1..${bn}) "#"
-    branch-rev-range = ! ${git:-git} brr
+    brr = "! bn=`${git:-git} branch-name ${1}` && brs=`${git:-git} brs \"${bn}\"` && (([ -z \"${brs}\" ] && echo ${bn}) || echo ${brs}~1..${bn}) #"
+    branch-rev-range = "! ${git:-git} brr"
 
     launch-in = "! e=`${git:-git} -C \"${1}\" rev-parse --local-env-vars` && unset ${e} && ${git:-git} -C"
     labeled-rev-parse-show = "! s=`${git:-git} launch-in \"${1}\" rev-parse --show-${2}` c=${?} sh -c 'echo ${3} ${s:-./}; exit ${c}' --"
@@ -45,8 +45,8 @@
     mws = "! ${git:-git} master-workspace"
 
     replace-prefixes = "! p=`${git:-git} -C \"${GIT_PREFIX}\" to-top` sh -c '${git:-git} launch-in \"${GIT_PREFIX}\" \"${0}\" --src-prefix=${p} --dst-prefix=${p} \"${@}\"'"
-    lp   = "! ${git:-git} launch-in \"${GIT_PREFIX}\" replace-prefixes ls -p"
-    dd   = ! sh -c '${git:-git} launch-in \"${GIT_PREFIX}\" replace-prefixes diff \"${@}\" --' --
+    lp = "! ${git:-git} launch-in \"${GIT_PREFIX}\" replace-prefixes ls -p"
+    dd = "! sh -c '${git:-git} launch-in \"${GIT_PREFIX}\" replace-prefixes diff \"${@}\" --' --"
 
     lsb  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" lsf  `${git:-git} branch-rev-range \"${@}\"` #"
     lnb  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" lnf  `${git:-git} branch-rev-range \"${@}\"` #"
@@ -56,29 +56,29 @@
     lpb  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" lpf  `${git:-git} branch-rev-range \"${@}\"` #"
     lpwb = "! ${git:-git} launch-in \"${GIT_PREFIX}\" lpwf `${git:-git} branch-rev-range \"${@}\"` #"
 
-    dnb  = ! ${git:-git} launch-in \"${GIT_PREFIX}\" dn  `${git:-git} branch-rev-range \"${@}\"` "#"
-    drb  = ! ${git:-git} launch-in \"${GIT_PREFIX}\" dr  `${git:-git} branch-rev-range \"${@}\"` "#"
-    ddb  = ! ${git:-git} launch-in \"${GIT_PREFIX}\" dd  `${git:-git} branch-rev-range \"${@}\"` "#"
-    ddwb = ! ${git:-git} launch-in \"${GIT_PREFIX}\" ddw `${git:-git} branch-rev-range \"${@}\"` "#"
+    dnb  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" dn  `${git:-git} branch-rev-range \"${@}\"` #"
+    drb  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" dr  `${git:-git} branch-rev-range \"${@}\"` #"
+    ddb  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" dd  `${git:-git} branch-rev-range \"${@}\"` #"
+    ddwb = "! ${git:-git} launch-in \"${GIT_PREFIX}\" ddw `${git:-git} branch-rev-range \"${@}\"` #"
 
-    foreach-stdin-line = ! xargs -I{} sh -c "'d=\"{}\" && echo \"## ${d}\" 1>&2 && [ ${#} = 0 ] || ${git:-git} -C `echo ${d} | sed \"s/^.* //\"` \"${@}\"'" --
-    tt   = ! find -L `pwd` -maxdepth 6 -name .git -exec dirname {} "';'" | ${git:-git} foreach-stdin-line
-    wtt  = ! ${git:-git} run-script guess-worktree -lw | ${git:-git} foreach-stdin-line
+    foreach-stdin-line = "! xargs -I{} sh -c 'd=\"{}\" && echo \"## ${d}\" 1>&2 && [ ${#} = 0 ] || ${git:-git} -C `echo ${d} | sed \"s/^.* //\"` \"${@}\"' --"
+    tt  = "! find -L `pwd` -maxdepth 6 -name .git -exec dirname {} ';' | ${git:-git} foreach-stdin-line"
+    wtt = "! ${git:-git} run-script guess-worktree -lw | ${git:-git} foreach-stdin-line"
 
-    run-script = ! mws=`${git:-git} mws` && ws=`${git:-git} ws` && cd \"${GIT_PREFIX:-.}\" >/dev/null && sh -c 'PATH='\""${ws}/scripts:${mws:+${mws}/scripts:}"\"'${PATH} \"${@}\"' --
+    run-script = "! mws=`${git:-git} mws` && ws=`${git:-git} ws` && cd \"${GIT_PREFIX:-.}\" >/dev/null && sh -c 'PATH='\"""${ws}/scripts:${mws:+${mws}/scripts:}""\"'${PATH} \"${@}\"' --"
 
-    update-worktrees = ! ${git:-git} launch-in \"${GIT_PREFIX}\" run-script update-worktrees
-    uu = ! ${git:-git} launch-in \"${GIT_PREFIX}\" update-worktrees
+    update-worktrees = "! ${git:-git} launch-in \"${GIT_PREFIX}\" run-script update-worktrees"
+    uu = "! ${git:-git} launch-in \"${GIT_PREFIX}\" update-worktrees"
 
-    restore-worktrees = ! ${git:-git} launch-in \"${GIT_PREFIX}\" run-script restore-worktrees
-    rr = ! ${git:-git} launch-in \"${GIT_PREFIX}\" restore-worktrees
+    restore-worktrees = "! ${git:-git} launch-in \"${GIT_PREFIX}\" run-script restore-worktrees"
+    rr = "! ${git:-git} launch-in \"${GIT_PREFIX}\" restore-worktrees"
 
-    guess-worktree = ! ${git:-git} launch-in \"${GIT_PREFIX}\" run-script guess-worktree
-    gg = ! ${git:-git} launch-in \"${GIT_PREFIX}\" guess-worktree
+    guess-worktree = "! ${git:-git} launch-in \"${GIT_PREFIX}\" run-script guess-worktree"
+    gg = "! ${git:-git} launch-in \"${GIT_PREFIX}\" guess-worktree"
 
-    bbs = ! ${git:-git} bb -vv --color \"${@}\" | ruby -ne '$_.scan(%r{^([*]?\\s*\\S+.*?)\\S+\\s+\\[([^\\]:]*?) *: *([^\\]:]*?)\\]}){|b,r,s|puts %q{%s %-12s %s}%[b,s,r]}' "#"
-    bbb = ! ${git:-git} bbs --no-color | ruby -ne "'puts $_.scan(%r{^[*\\s]*(\\S+)})'" "#"
-    bbc = ! ${git:-git} branch -vv --color | grep '^[*] '
+    bbs = "! ${git:-git} bb -vv --color \"${@}\" | ruby -ne '$_.scan(%r{^([*]?\\s*\\S+.*?)\\S+\\s+\\[([^\\]:]*?) *: *([^\\]:]*?)\\]}){|b,r,s|puts %q{%s %-12s %s}%[b,s,r]}' #"
+    bbb = "! ${git:-git} bbs --no-color | ruby -ne 'puts $_.scan(%r{^[*\\s]*(\\S+)})' #"
+    bbc = "! ${git:-git} branch -vv --color | grep '^[*] '"
 
     bro = "! git branch -r --list ${1:+\"*${1}*/*\"} | while read remote; do echo \"`git log -1 --color --pretty=meta \"${remote}\"` ${remote}\"; done #"
     branch-remote-owner = "! ${git:-git} bro"
