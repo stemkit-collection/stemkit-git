@@ -29,7 +29,7 @@ main () {
   report_dry_run
 
   [ "${REMOTE}" = yes ] && {
-    run git remote update --prune
+    run git fetch --all --prune --prune-tags
   }
 
   [ "${restore_dry_run}" = yes ] && {
