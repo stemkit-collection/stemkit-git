@@ -19,10 +19,10 @@
     remoteBranch = yellow dim bold
 
 [log]
-    date = format-local:%F %T
+    date = format-local:%Y-%m-%d %H:%M:%S
 
 [blame]
-    date = format-local:%F %T
+    date = format-local:%Y-%m-%d %H:%M:%S
 
 [pretty]
     line = tformat:%C(auto)%C(yellow dim bold)%h%C(reset)%C(auto) %cd %C(cyan dim bold)%<(19,trunc)%cN%C(reset)%C(auto)%d %s
