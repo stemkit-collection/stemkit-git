@@ -1,4 +1,4 @@
-# vim: ft=gitconfig: sw=4:
+# vim: ft=gitconfig: sw=4: expandtab:
 #
 
 [alias]
