@@ -44,14 +44,23 @@
 
     who = blame
 
+    top      = rev-parse --show-toplevel
+    top-from = rev-parse --show-prefix
+    top-to   = rev-parse --show-cdup
+
     ww  = worktree
     wwl = ww list
     wwa = ww add
     wwp = ww prune
 
+    worktree-branches      = "! git worktree prune && git branch | awk 'NF==2 {print $2}'"
+    worktree-less-branches = "! git worktree prune && git branch | awk 'NF==1 {print $1}'"
+
+    wrr = "! git worktree-less-branches | xargs -t -n1 -I{} git worktree add ../{} {}"
+    wtt = "! git worktree-branches | env -u GIT_DIR xargs -t -n1 -I{} git -C ../{} \"${@:-ss}\" #"
+    wuu = "! git remote update --prune && git wtt merge --ff-only"
+
     svn-pull  = svn rebase
     svn-push  = svn dcommit
     svn-clone = svn clone
 
-    wrr = "! git wwp && git bb | awk 'NF==1{print $1}' | xargs -t -i git worktree add ../{} {}"
-    wuu = "! git remote update --prune && git wwp && git bb | awk 'NF==2{print $2}' | xargs -t -i git -C ../{} merge --ff-only"
