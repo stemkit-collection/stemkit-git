@@ -3,6 +3,8 @@
 # Author: Gennady Bystritsky (bystr@mac.com)
 
 REPO_STM_GIT="https://github.com/stemkit-collection/stemkit-git.git"
+REPO_STM_GIT_PUSH="git@github.com:stemkit-collection/stemkit-git.git"
+
 REPO_TSC_TPM="https://github.com/tsc-collection/tsc-tpm.git"
 REPO_STM_UTIL="https://github.com/stemkit-collection/stemkit-util.git"
 
@@ -86,6 +88,8 @@ main () {
   run git init .
 
   run git remote add "${REMOTE_STM_GIT}" "${REPO_STM_GIT}"
+  run git remote set-url --push "${REMOTE_STM_GIT}" "${REPO_STM_GIT_PUSH}"
+
   run git config --local --replace-all core.symlinks true
 
   [ "${O_RUNTIME}" = yes ] && {
