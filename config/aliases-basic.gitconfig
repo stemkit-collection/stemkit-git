@@ -52,3 +52,6 @@
     svn-pull  = svn rebase
     svn-push  = svn dcommit
     svn-clone = svn clone
+
+    wrr = "! git wwp && git bb | awk 'NF==1{print $1}' | xargs -t -i git worktree add ../{} {}"
+    wuu = "! git remote update --prune && git wwp && git bb | awk 'NF==2{print $2}' | xargs -t -i git -C ../{} merge --ff-only"
