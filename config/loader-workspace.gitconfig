@@ -6,4 +6,5 @@
 #
 
 [include]
-    path = loader-workspace.gitconfig
+    path = defaults.gitconfig
+    path = aliases-workspace.gitconfig

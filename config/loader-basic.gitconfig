@@ -1,0 +1,6 @@
+# vim: ft=gitconfig: sw=4: expandtab:
+#
+
+[include]
+    path = defaults.gitconfig
+    path = aliases-basic.gitconfig
