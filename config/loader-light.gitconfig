@@ -3,4 +3,4 @@
 
 [include]
     path = defaults.gitconfig
-    path = aliases-basic.gitconfig
+    path = aliases-light.gitconfig

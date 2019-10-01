@@ -2,7 +2,7 @@
 #
 
 [include]
-    path = aliases-basic.gitconfig
+    path = aliases-light.gitconfig
 
 [alias]
     stm-aliases-available = "! true"
