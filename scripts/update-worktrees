@@ -47,7 +47,7 @@ main () {
 }
 
 local_with_remote_if_current_and_differ () {
-  git bbs "${@}" | awk '$1 == "*" {print $(2), $(3), $(NF)}'
+  git bbs "${@}" | awk '$1 == "*" {print $(2), $(4), $(NF)}'
 }
 
 sync_branch () {
@@ -67,7 +67,7 @@ sync_branch () {
   pwd="pwd"
 
   upstream=`git rev-parse --abbrev-ref @{u} 2>&5` || {
-    reason=`echo "${reason}" | tr '[a-z]' '[A-Z]'`
+    reason=`echo "${reason}" | tr '[a-z]' '[A-Z]' | sed 's/^\[\(.*\)\]$/\1/'`
 
     "${pwd}"
     indent_output_from warning 'Not a valid upstream' "${local_no_color}" "${reason}" "${remote_color}"
