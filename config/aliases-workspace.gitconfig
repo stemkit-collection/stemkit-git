@@ -76,10 +76,3 @@
 
     guess-worktree = "! ${git:-git} launch-in \"${GIT_PREFIX}\" run-script guess-worktree"
     gg = "! ${git:-git} launch-in \"${GIT_PREFIX}\" guess-worktree"
-
-    bbs = "! ${git:-git} bb -vv --color \"${@}\" | ruby -ne '$_.scan(%r{^([*]?\\s*\\S+.*?)\\S+\\s+\\[([^\\]:]*?) *: *([^\\]:]*?)\\]}){|b,r,s|puts %q{%s %-12s %s}%[b,s,r]}' #"
-    bbb = "! ${git:-git} bbs --no-color | ruby -ne 'puts $_.scan(%r{^[*\\s]*(\\S+)})' #"
-    bbc = "! ${git:-git} branch -vv --color | grep '^[*] '"
-
-    bro = "! git branch -r --list ${1:+\"*${1}*/*\"} | while read remote; do echo \"`git log -1 --color --pretty=meta \"${remote}\"` ${remote}\"; done #"
-    branch-remote-owner = "! ${git:-git} bro"
