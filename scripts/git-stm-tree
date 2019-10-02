@@ -5,7 +5,7 @@
 LOCATION_MARKER=scripts/hooks/../../config/dot-gitloader
 
 main () {
-  unset O_FOLDER
+  unset O_FOLDER O_EXCLUDE
 
   disable_dry_run
   parse_command_line "${@}"
@@ -23,7 +23,21 @@ process_parameters () {
   info "Processing ${folder}"
 
   find_workspaces "${folder}" | while read folder; do
-    run git -C "${folder}" "${@}"
+    unless_in_exclude "${folder}" && {
+      run git -C "${folder}" "${@}"
+    }
+  done
+
+  return 0
+}
+
+unless_in_exclude () {
+  for item in ${O_EXCLUDE}; do
+    case "${1}" in
+      *${item}*)
+        return 1
+      ;;
+    esac
   done
 
   return 0
@@ -43,6 +57,11 @@ process_option () {
       return 4
     ;;
 
+    --exclude | -e )
+      O_EXCLUDE="${argument} ${O_EXCLUDE}"
+      return 4
+    ;;
+
     *)
       process_standard_option "${@}"
     ;;
@@ -50,7 +69,7 @@ process_option () {
 }
 
 options_usage () {
-  echo "`standard_options_usage`[--directory|-d <folder>]"
+  echo "`standard_options_usage`[--directory|-d <folder>][--exclude|-e <pattern>"
 }
 
 . `type "${0}" | sed 's/^.* //' | xargs dirname`/core.lib.sh
