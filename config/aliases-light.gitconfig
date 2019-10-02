@@ -39,10 +39,16 @@
     dsw = ds --color-words
 
     bb  = branch
-    bbr = bb -r --column=auto
-    bbv = "! git branch -vv --color | sed 's/([^)]*) *//g' #"
-    bbc = "! git branch -vv --color | grep '^[*] ' #"
-    bbs = "! git bbv | sed -n 's/^\\(.*\\) \\[\\(.*\\):  *\\(.*\\)\\].*$/\\1 [\\3] \\2/p' #"
+
+    branch-list-remote = bb -r --column=auto
+    branch-local-verbose = "! git branch -vv --color \"${@}\" | sed 's/([^)]*) *//g' #"
+    branch-need-sync = "! git bbv \"${@}\" | sed -n 's/^\\(.*\\) \\[\\([^]]*\\):  *\\(.*\\)\\].*$/\\1 [\\3] \\2/p' #"
+    branch-show-current = "! git branch -vv --color \"${@}\" | grep '^[*] ' #"
+
+    bbr = branch-list-remote
+    bbv = branch-local-verbose
+    bbs = branch-need-sync
+    bbc = branch-show-current
 
     who = blame
 
