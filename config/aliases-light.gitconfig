@@ -61,11 +61,11 @@
     wwa = ww add
     wwp = ww prune
 
-    worktree-branches      = "! git worktree prune && git branch | awk 'NF==2 {print $2}' #"
-    worktree-less-branches = "! git worktree prune && git branch | awk 'NF==1 {print $1}' #"
+    worktree-branches      = "! git worktree prune && git branch | awk '$1 ~ /^[^@[:alnum:]]/ {print $NF}' #"
+    worktree-less-branches = "! git worktree prune && git branch | awk '$1 ~ /^[[:alnum:]]/ {print $NF}' #"
 
     worktree-restore  = "! git worktree-less-branches | xargs -t -n1 -I{} git worktree add ../{} {} #"
-    worktree-traverse = "! git worktree-branches | env -u GIT_DIR xargs -t -n1 -I{} git -C ../{} \"${@:-ss}\" #"
+    worktree-traverse = "! git worktree-branches | sed 's/^=*//' | env -u GIT_DIR xargs -t -n1 -I{} git -C ../{} \"${@:-ss}\" #"
     worktree-update   = "! git remote update --prune && git worktree-traverse merge --ff-only #"
 
     wrr = worktree-restore
