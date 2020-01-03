@@ -22,9 +22,9 @@ process_parameters () {
   [ "${#}" -eq 0 ] && enable_dry_run
   info "Processing ${folder}"
 
-  find_workspaces "${folder}" | while read folder; do
-    unless_in_exclude "${folder}" && {
-      run git -C "${folder}" "${@}"
+  find_workspaces "${folder}" | while read workspace; do
+    unless_in_exclude "${workspace}" && {
+      run git -C "${workspace}" "${@}"
     }
   done
 
@@ -35,6 +35,7 @@ unless_in_exclude () {
   for item in ${O_EXCLUDE}; do
     case "${1}" in
       *${item}*)
+        warning "Skipping ${1}"
         return 1
       ;;
     esac
@@ -44,7 +45,7 @@ unless_in_exclude () {
 }
 
 find_workspaces () {
-  find "${@:-.}" -type d -exec test -d {}/.git \; -prune -exec test -f "{}/${LOCATION_MARKER}" \; -print
+  find "${@:-.}" -type d -exec test -e {}/.git \; -prune -exec test -f "{}/${LOCATION_MARKER}" \; -print
 }
 
 process_option () {
