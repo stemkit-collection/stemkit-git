@@ -25,14 +25,18 @@
     date = format-local:%Y-%m-%d %H:%M:%S
 
 [pretty]
-    line = tformat:%C(auto)%C(yellow dim bold)%h%C(reset)%C(auto) %cd %C(cyan dim bold)%<(19,trunc)%cN%C(reset)%C(auto)%d %s
-    meta = tformat:%C(auto)%C(yellow dim bold)%h%C(reset)%C(auto) %cd %C(cyan dim bold)%<(19,trunc)%cN%C(reset)%C(auto)
+    line = tformat:%h %cd %<(19,trunc)%cN%d %s
+    meta = tformat:%h %cd %<(19,trunc)%cN
+    some = tformat:-------------------- Committed by: %cN <%cE>%+D%+h (%p) | %aN <%aE> | %cd (%cr) %+s
+    more = tformat:-------------------- Committed by: %cN <%cE>%+D%+h (%p) | %aN <%aE> | %cd (%cr) %+s%+b
 
-    some = tformat:%C(auto)-------------------- %C(dim)Committed by: %cN <%cE>%C(reset)%C(auto)%+D%+h (%p) | %C(cyan dim bold)%aN <%aE>%C(reset)%C(auto) | %cd (%cr) %+s
-    more = tformat:%C(auto)-------------------- %C(dim)Committed by: %cN <%cE>%C(reset)%C(auto)%+D%+h (%p) | %C(cyan dim bold)%aN <%aE>%C(reset)%C(auto) | %cd (%cr) %+s%+b
+    color-line = tformat:%C(auto)%C(yellow dim bold)%h%C(reset)%C(auto) %cd %C(cyan dim bold)%<(19,trunc)%cN%C(reset)%C(auto)%d %s
+    color-meta = tformat:%C(auto)%C(yellow dim bold)%h%C(reset)%C(auto) %cd %C(cyan dim bold)%<(19,trunc)%cN%C(reset)%C(auto)
+    color-some = tformat:%C(auto)-------------------- %C(dim)Committed by: %cN <%cE>%C(reset)%C(auto)%+D%+h (%p) | %C(cyan dim bold)%aN <%aE>%C(reset)%C(auto) | %cd (%cr) %+s
+    color-more = tformat:%C(auto)-------------------- %C(dim)Committed by: %cN <%cE>%C(reset)%C(auto)%+D%+h (%p) | %C(cyan dim bold)%aN <%aE>%C(reset)%C(auto) | %cd (%cr) %+s%+b
 
 [format]
-    pretty = line
+    pretty = color-line
 
 [status]
     short = true

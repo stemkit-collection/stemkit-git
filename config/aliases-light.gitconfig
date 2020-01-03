@@ -10,9 +10,9 @@
     su = ss --untracked-files=all
     si = ss --ignored
 
-    ll = log --pretty=line
-    ls = log --pretty=some
-    lv = log --pretty=more --name-status
+    ll = log --pretty=color-line
+    ls = log --pretty=color-some
+    lv = log --pretty=color-more --name-status
     ln = ls --name-status
     lr = ln --relative
 
@@ -76,5 +76,5 @@
     svn-push  = svn dcommit
     svn-clone = svn clone
 
-    branch-remote-owner = "! git branch -r --list \"*${1}*/*\" | while read line; do set -- ${line}; echo \"`git log -1 --color --pretty=meta ${1}`\" ${1}; done #"
+    branch-remote-owner = "! git branch -r --list \"*${1}*/*\" | while read line; do set -- ${line}; echo \"`git log -1 --color --pretty=color-meta ${1}`\" ${1}; done #"
     bro = branch-remote-owner
