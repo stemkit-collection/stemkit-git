@@ -28,12 +28,16 @@ another location for your local repository before trying the commands below.
 To create a workspace in `~/projects/workspace`, use the following commands
 that would invoke the workspace creation script directly from GitHub:
 
-    SPOT=https://raw.github.com/stemkit-collection/stemkit-git/master/scripts
-    curl -sL "${SPOT}/make-workspace" | sh -s -- -f ~/projects/workspace
+``` sh
+SPOT=https://raw.github.com/stemkit-collection/stemkit-git/master/scripts
+curl -sL "${SPOT}/make-workspace" | sh -s -- -f ~/projects/workspace
+```
 
 Or for easier copy-and-paste:
 
-    curl -sL https://raw.github.com/stemkit-collection/stemkit-git/master/scripts/make-workspace | sh -s -- -f ~/projects/workspace
+``` sh
+curl -sL https://raw.github.com/stemkit-collection/stemkit-git/master/scripts/make-workspace | sh -s -- -f ~/projects/workspace
+```
 
 > ##### _NOTE_: To simply print what Git commands would be executed internally without having them actually executed, please omit option `-f` from the command line above.
 
@@ -49,7 +53,9 @@ being the local branch called `workspace` instead of `master`.
 
 > > #### Use the following command for so called _`runtime layout`_:
 
-    curl -sL https://raw.github.com/stemkit-collection/stemkit-git/master/scripts/make-workspace | sh -s -- -f -r ~/projects/runtime/workspace
+``` sh
+curl -sL https://raw.github.com/stemkit-collection/stemkit-git/master/scripts/make-workspace | sh -s -- -f -r ~/projects/runtime/workspace
+```
 
 The last step in setup is to modify your `~/.gitconfig` file to make your Git
 aware of the features provided by this facility (unless you've already done it
