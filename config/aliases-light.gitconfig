@@ -72,6 +72,9 @@
     wtt = worktree-traverse
     wuu = worktree-update
 
+    rr = wrr
+    uu = wuu
+
     svn-pull  = svn rebase
     svn-push  = svn dcommit
     svn-clone = svn clone
