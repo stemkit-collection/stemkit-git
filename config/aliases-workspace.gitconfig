@@ -46,7 +46,7 @@
     mws = "! ${git:-git} master-workspace"
 
     replace-prefixes = "! p=`${git:-git} -C \"${GIT_PREFIX}\" to-top` sh -c '${git:-git} launch-in \"${GIT_PREFIX}\" \"${0}\" --src-prefix=${p} --dst-prefix=${p} \"${@}\"'"
-    lp = "! ${git:-git} launch-in \"${GIT_PREFIX}\" replace-prefixes ls -p"
+    lp = "! ${git:-git} launch-in \"${GIT_PREFIX}\" replace-prefixes ls -m -p"
     dd = "! sh -c '${git:-git} launch-in \"${GIT_PREFIX}\" replace-prefixes diff \"${@}\" --' --"
 
     lsb  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" lsf  `${git:-git} branch-rev-range \"${@}\"` #"

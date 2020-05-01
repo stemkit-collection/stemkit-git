@@ -13,10 +13,10 @@
     ll = log --pretty=color-line
     ls = log --pretty=color-some
     lv = log --pretty=color-more --name-status
-    ln = ls --name-status
+    ln = ls -m --name-status
     lr = ln --relative
 
-    lp  = ls -p
+    lp  = ls -m -p
     lpw = lp --color-words
 
     llf = ll --first-parent
