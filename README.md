@@ -31,11 +31,11 @@ that would invoke the workspace creation script directly from GitHub:
     SPOT=https://raw.github.com/stemkit-collection/stemkit-git/master/scripts
     curl -sL "${SPOT}/make-workspace" | sh -s -- -f ~/projects/workspace
 
-Or for easier copy-paste:
+Or for easier copy-and-paste:
 
-> `echo https://raw.github.com/stemkit-collection/stemkit-git | xargs -I% curl
-> -sL %/master/scripts/make-workspace | sh -s -- -f ~/projects/workspace`
-> > ##### _NOTE_: To simply print what Git commands would be executed internally without having them actually executed, please omit option `-f` from the command line above.
+    curl -sL https://raw.github.com/stemkit-collection/stemkit-git/master/scripts/make-workspace | sh -s -- -f ~/projects/workspace
+
+> ##### _NOTE_: To simply print what Git commands would be executed internally without having them actually executed, please omit option `-f` from the command line above.
 
 This command will create a local Git repository in the specified folder with
 one remote named `remote-gh-stm-git` referencing repository
@@ -46,6 +46,10 @@ area will have a single branch named `workspace` tracking remote branch
 being the local branch called `workspace` instead of `master`.
 
 > ##### _FYI_: You may pick any other folder name for the locaiton of your repository instead of `~/projects/workspace`, the main branch will still be named `workspace` (you may rename it later if desired)
+
+> > #### Use the following command for so called _`runtime layout`_:
+
+    curl -sL https://raw.github.com/stemkit-collection/stemkit-git/master/scripts/make-workspace | sh -s -- -f -r ~/projects/runtime/workspace
 
 The last step in setup is to modify your `~/.gitconfig` file to make your Git
 aware of the features provided by this facility (unless you've already done it
