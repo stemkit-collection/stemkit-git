@@ -9,28 +9,28 @@
     stm-check-master = "! ${git:-git} master-workspace | xargs -I{} ${git:-git} -C {} workspace | xargs echo 'Master workspace:'"
     stm-env = "! env"
 
-    print-aliases = "! ${git:-git} config --list | ruby -ne '$_.scan(%r{^alias[.](.*?)\\s*=\\s*(.*)$}){|a,c|puts %q{%-4s -> %s}%[a,c]}' | \"${PAGER:-cat}\""
-    aa = "! ${git:-git} print-aliases"
+    aa = "! ${git:-git} config --list | ruby -ne '$_.scan(%r{^alias[.](.*?)\\s*=\\s*(.*)$}){|a,c|puts %q{%-4s -> %s}%[a,c]}' | \"${PAGER:-cat}\""
+    print-aliases = aa
 
-    branch-name = "! bn=`${git:-git} rev-parse --abbrev-ref --revs-only \"${1:-HEAD}\" --` && echo ${bn:-${1}} #"
-    bn = "! ${git:-git} branch-name"
+    bn = "! bn=`${git:-git} rev-parse --abbrev-ref --revs-only \"${1:-HEAD}\" --` && echo ${bn:-${1}} #"
+    branch-name = bn
 
-    branch-start-label = "! echo branch:start: #"
-    bsl = "! ${git:-git} branch-start-label"
+    bsl = "! echo branch:start: #"
+    branch-start-label = bsl
 
-    bsm = "! bn=\"${1:-`${git:-git} branch-name`}\" && echo \"`${git:-git} branch-start-label`${bn}\" #"
-    branch-start-message = "! ${git:-git} bsm"
+    bsm = "! bn=\"${1:-`${git:-git} bn`}\" && echo \"`${git:-git} bsl`${bn}\" #"
+    branch-start-message = bsm
 
     ensure-not-staged = "! ${git:-git} diff --staged --exit-code --name-status || (echo ERROR: Content found staged for commit, please reset. 1>&2 && false) #"
     mark-branch-start = "! ${git:-git} ensure-not-staged && bsm=`${git:-git} bsm \"${@}\"` && ${git:-git} commit --allow-empty -m \"${bsm}\" #"
 
     make-branch = "! ${git:-git} checkout -b \"${1}\" \"${2:-HEAD}\" && bsm=`${git:-git} bsm \"${1}\"` && ${git:-git} commit --allow-empty -m \"${bsm}\" #"
 
-    brs = "! bn=\"${1:-`${git:-git} branch-name`}\" && bsl=`${git:-git} branch-start-label` && ${git:-git} rev-list -1 --first-parent --grep \"^${bsl}\" \"${bn}\" -- #"
-    branch-rev-start = "! ${git:-git} brs"
+    brs = "! bn=\"${1:-`${git:-git} bn`}\" && bsl=`${git:-git} bsl` && ${git:-git} rev-list -1 --first-parent --grep \"^${bsl}\" \"${bn}\" -- #"
+    branch-rev-start = brs
 
-    brr = "! bn=`${git:-git} branch-name ${1}` && brs=`${git:-git} brs \"${bn}\"` && (([ -z \"${brs}\" ] && echo ${bn}) || echo ${brs}~1..${bn}) #"
-    branch-rev-range = "! ${git:-git} brr"
+    brr = "! bn=`${git:-git} bn ${1}` && brs=`${git:-git} brs \"${bn}\"` && (([ -z \"${brs}\" ] && echo ${bn}) || echo ${brs}~1..${bn}) #"
+    branch-rev-range = brr
 
     launch-in = "! e=`${git:-git} -C \"${1}\" rev-parse --local-env-vars` && unset ${e} && ${git:-git} -C"
     labeled-rev-parse-show = "! s=`${git:-git} launch-in \"${1}\" rev-parse --show-${2}` c=${?} sh -c 'echo ${3} ${s:-./}; exit ${c}' --"
@@ -49,18 +49,20 @@
     lp = "! ${git:-git} launch-in \"${GIT_PREFIX}\" replace-prefixes ls -m -p"
     dd = "! sh -c '${git:-git} launch-in \"${GIT_PREFIX}\" replace-prefixes diff \"${@}\" --' --"
 
-    lsb  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" lsf  `${git:-git} branch-rev-range \"${@}\"` #"
-    lnb  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" lnf  `${git:-git} branch-rev-range \"${@}\"` #"
-    lrb  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" lrf  `${git:-git} branch-rev-range \"${@}\"` #"
-    lvb  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" lvf  `${git:-git} branch-rev-range \"${@}\"` #"
-    llb  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" llf  `${git:-git} branch-rev-range \"${@}\"` #"
-    lpb  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" lpf  `${git:-git} branch-rev-range \"${@}\"` #"
-    lpwb = "! ${git:-git} launch-in \"${GIT_PREFIX}\" lpwf `${git:-git} branch-rev-range \"${@}\"` #"
+    with-first = "! c=${1}; shift; f=; [ -${1} != --- ] && f=${1} && shift; echo `${git:-git} ${c} ${f}` \"${@}\" #"
 
-    dnb  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" dn  `${git:-git} branch-rev-range \"${@}\"` #"
-    drb  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" dr  `${git:-git} branch-rev-range \"${@}\"` #"
-    ddb  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" dd  `${git:-git} branch-rev-range \"${@}\"` #"
-    ddwb = "! ${git:-git} launch-in \"${GIT_PREFIX}\" ddw `${git:-git} branch-rev-range \"${@}\"` #"
+    lsb  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" lsf  `${git:-git} with-first brr \"${@}\"` #"
+    lnb  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" lnf  `${git:-git} with-first brr \"${@}\"` #"
+    lrb  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" lrf  `${git:-git} with-first brr \"${@}\"` #"
+    lvb  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" lvf  `${git:-git} with-first brr \"${@}\"` #"
+    llb  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" llf  `${git:-git} with-first brr \"${@}\"` #"
+    lpb  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" lpf  `${git:-git} with-first brr \"${@}\"` #"
+    lpwb = "! ${git:-git} launch-in \"${GIT_PREFIX}\" lpwf `${git:-git} with-first brr \"${@}\"` #"
+
+    dnb  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" dn  `${git:-git} with-first brr \"${@}\"` #"
+    drb  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" dr  `${git:-git} with-first brr \"${@}\"` #"
+    ddb  = "! ${git:-git} launch-in \"${GIT_PREFIX}\" dd  `${git:-git} with-first brr \"${@}\"` #"
+    ddwb = "! ${git:-git} launch-in \"${GIT_PREFIX}\" ddw `${git:-git} with-first brr \"${@}\"` #"
 
     foreach-stdin-line = "! env -u GIT_DIR xargs -I{} sh -c 'd=\"{}\" && echo \"## ${d}\" 1>&2 && [ ${#} = 0 ] || ${git:-git} -C `echo ${d} | sed \"s/^.* //\"` \"${@}\"' --"
     tt  = "! find -L `pwd` -maxdepth 6 -name .git -exec dirname {} ';' | ${git:-git} foreach-stdin-line"
