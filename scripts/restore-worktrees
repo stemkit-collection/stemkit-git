@@ -25,10 +25,16 @@ main () {
 
 process_branches () {
   for branch in "${@}"; do
-    (echo "${branch}" | egrep -q '^([0-9]+[.])|[#@=+%]') && {
-      info "Ignored for prefix" "${branch}"
-      continue
-    }
+    case "${branch}" in
+      +)
+	continue
+	;;
+
+      [#@=%]*)
+        info "Ignored for prefix" "${branch}"
+	continue
+	;;
+    esac
 
     make_worktree ${branch} || {
       warning 'Problems detected, check prior messages.'
