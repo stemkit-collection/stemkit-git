@@ -47,3 +47,6 @@
 
 [push]
     default = upstream
+
+[receive]
+    denyCurrentBranch = ignore
