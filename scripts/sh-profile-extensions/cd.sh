@@ -3,16 +3,17 @@
 # Author: Gennady Bystritsky (bystr@mac.com)
 
 __cdws__ () {
-  git guess-worktree 1>/dev/null 2>&1 && {
+  if git guess-worktree 1>/dev/null 2>&1; then
     __cdws__=`git guess-worktree "${@}"` && cd "${__cdws__:-.}"
-    return ${?}
-  }
+  else
+    __cdws__=`guess-worktree "${@}"` && cd "${__cdws__:-.}"
+  fi
 
-  __cdws__=`guess-worktree "${@}"` && cd "${__cdws__:-.}"
+  [ ${?} -eq 0 ] && git branch-show-current
 }
 
 __cdc__ () {
-  __cdc__=`"${@:-pwd}"` && cd "${__cdc__:-.}"
+  __cdc__=`"${@:-pwd}"` && cd "${__cdc__:-.}" && pwd
 }
 
 alias cdw=__cdws__
