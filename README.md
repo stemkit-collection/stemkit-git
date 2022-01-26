@@ -63,7 +63,13 @@ for another workspace).
 
 The easiest way to achieve this would be to issue the following command:
 
-    git config --global --add include.path projects/workspace/config/dot-gitconfig
+    git config --global --add include.path projects/workspace/config/loader-workspace.gitconfig
+
+or
+
+    git config --global --add include.path projects/workspace/config/loader-light.gitconfig
+
+> ##### _NOTE_: The latter is suitable for native Windows environment. No scripts, just git aliases and configuration.
 
 You are done! To make sure that everything works as expected please run the
 following command and observe its output:
